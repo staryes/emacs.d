@@ -89,7 +89,7 @@
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require 'init-spelling)
   (require 'init-theme)
-  (require 'init-macos-keys)
+  ;(require 'init-macos-keys)
   (require 'init-gui-frames)
   (require 'init-uniquify)
   (require 'init-ibuffer)
@@ -145,8 +145,6 @@
   (require 'init-writting)
 
   (require 'init-fonts)
-
-  
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
