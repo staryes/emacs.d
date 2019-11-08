@@ -15,8 +15,8 @@
        (elpy-enable)
 
        ;; Use IPython for REPL
-       (setq python-shell-interpreter "ipython"
-             python-shell-interpreter-args "--simple-prompt -i"
+       (setq python-shell-interpreter "jupyter"
+             python-shell-interpreter-args "console --simple-prompt"
              python-shell-prompt-detect-failure-warning nil)
        (add-to-list 'python-shell-completion-native-disabled-interpreters
                     "jupyter")
@@ -24,7 +24,7 @@
        ;; Enable Flycheck
        (when (require 'flycheck nil t)
          (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-         (add-hook 'elpy-mode-hook 'flycheck-mode))
+         (add-hook 'elpy-mode-hook 'flycheck-mode)) 
 
        ;; Enable autopep8
        (require 'py-autopep8)

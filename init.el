@@ -148,6 +148,8 @@
   (require-init 'init-writting t)
 
   (require-init 'init-fonts t)
+  (require-init 'init-nyan-mode t)
+  (require-init 'init-define-word t)
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows

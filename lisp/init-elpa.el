@@ -302,6 +302,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'elpy)
 (require-package 'flycheck)
 (require-package 'py-autopep8)
+;(require-package 'blacken)
 (require-package 'ein)
 (require-package 'legalese)
 (require-package 'simple-httpd)
@@ -351,7 +352,8 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'benchmark-init)
 (require-package 'langtool) ; check grammer
 (require-package 'typescript-mode)
-
+(require-package 'define-word)
+(require-package 'nyan-mode)
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
 ;; update key or else users can't install packages from GNU ELPA.
