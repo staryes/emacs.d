@@ -11,6 +11,8 @@
 (ad-activate 'term-sentinel)
 
 ;; always use bash
+
+;; try to use zsh
 (defvar my-term-program "/bin/zsh")
 ;; (defadvice ansi-term (before force-bash)
 ;;   (interactive (list my-term-program))
@@ -60,7 +62,8 @@
                   ("C-r" . term-send-reverse-search-history)
                   ("C-m" . term-send-raw)
                   ("C-k" . term-send-kill-whole-line)
-                  ("C-y" . yank)
+                  ;("C-y" . yank)
+                  ("C-y" . term-paste)
                   ("C-_" . term-send-raw)
                   ("M-f" . term-send-forward-word)
                   ("M-b" . term-send-backward-word)

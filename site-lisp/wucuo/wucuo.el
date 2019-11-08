@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018 Chen Bin
 ;;
-;; Version: 0.0.3
+;; Version: 0.0.6
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -32,15 +32,22 @@
 ;; 2. Usage
 ;; Run `wucuo-start' to setup and start `flyspell-mode'.
 ;; It spell check camel case words in code.
+;; Or just add "(wucuo-start)" into "~/.emacs".
+;;
+;; To enable wucuo for all languages, insert below code into ".emacs",
+;;
+;;   (defun prog-mode-hook-setup ()
+;;     (wucuo-start t))
+;;   (add-hook 'prog-mode-hook 'prog-mode-hook-setup)
 ;;
 ;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
 ;; `flyspell-prog-mode' could be replaced by "wucuo".
 ;;
-;; OR add one line setup if you prefer running `flyspell-buffer' manually:
-;;  (setq flyspell-generic-check-word-predicate #'wucuo-generic-check-word-predicate)
+;; Or add one line setup if you prefer running `flyspell-buffer' manually:
+;;   (setq flyspell-generic-check-word-predicate #'wucuo-generic-check-word-predicate)
 ;;
-;; OR setup for only one major mode:
-;;  (put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
+;; Or setup for only one major mode when major mode has its own flyspell setup:
+;;   (wucuo-setup-major-mode "js2-mode")
 
 ;;; Code:
 (require 'flyspell)
@@ -48,6 +55,11 @@
 (defgroup wucuo nil
   "Code spell checker."
   :group 'flyspell)
+
+(defcustom wucuo-debug nil
+  "Output debug information when it's not nil."
+  :type 'boolean
+  :group 'wucuo)
 
 (defcustom wucuo-check-nil-font-face nil
   "If nil, ignore text without font face."
@@ -91,6 +103,13 @@
   nil
   "Similar to `wucuo-font-faces-to-check'.
 Define personal font faces to check."
+  :type '(repeat sexp)
+  :group 'wucuo)
+
+(defcustom wucuo-major-modes-to-setup-by-force
+  '(typescript-mode)
+  "Major modes whose own predicate should be replaced by this program.
+Running `wucuo-start' with first parameter being t will set up modes listed here."
   :type '(repeat sexp)
   :group 'wucuo)
 
@@ -190,6 +209,7 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
                            shell-command-switch
                            cmd)
       (setq rlt (buffer-substring-no-properties (point-min) (point-max))))
+    (when wucuo-debug (message "wucuo-spell-checker-to-string => cmd=%s rlt=%s" cmd rlt))
     rlt))
 
 ;;;###autoload
@@ -215,21 +235,30 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
 Returns t to continue checking, nil otherwise.
 Flyspell mode sets this variable to whatever is the `flyspell-mode-predicate'
 property of the major mode name."
+  ;; Emacs 24 uses `font-lock-fontify-buffer'.
+  (if (fboundp 'font-lock-ensure) (font-lock-ensure)
+    (font-lock-fontify-buffer))
+
   (let* ((case-fold-search nil)
-         (current-font-face (get-text-property (- (point) 1) 'face))
+         (pos (- (point) 1))
+         (current-font-face (and (> pos 0) (get-text-property pos 'face)))
          (font-matched (or (memq current-font-face wucuo-font-faces-to-check)
                            (memq current-font-face wucuo-personal-font-faces-to-check)
                            (and wucuo-check-nil-font-face (eq current-font-face nil))))
          subwords
          word
          (rlt t))
+
+    (when wucuo-debug (message "font-matched=%s, current-font-face=%s" font-matched current-font-face))
     (cond
+     ((<= pos 0)
+      nil)
      ;; only check word with certain fonts
      ((not font-matched)
       (setq rlt nil))
 
-     ;; ignore two character word
-     ((< (length (setq word (thing-at-point 'word))) 2)
+     ;; ignore two character word, some major mode word equals to sub-word
+     ((< (length (setq word (thing-at-point 'symbol))) 2)
       (setq rlt nil))
 
      ;; handle camel case word
@@ -240,6 +269,8 @@ property of the major mode name."
      ;; `wucuo-extra-predicate' actually do nothing by default
      (t
       (setq rlt (funcall wucuo-extra-predicate word))))
+
+    (when wucuo-debug (message "wucuo-generic-check-word-predicate => word=%s rlt=%s wucuo-extra-predicate=%s subwords=%s" word rlt wucuo-extra-predicate subwords))
     rlt))
 
 ;;;###autoload
@@ -263,11 +294,34 @@ property of the major mode name."
       (message "%s created." file))))
 
 ;;;###autoload
-(defun wucuo-start ()
-  "Turn on wucuo to spell check code."
+(defun wucuo-version ()
+  "Output version."
+  (message "0.0.6"))
+
+;;;###autoload
+(defun wucuo-setup-major-mode (mode)
+  "Set up MODE's flyspell predicate."
+  (if (stringp mode) (setq mode (symobol mode)))
+  (eval-after-load mode
+    (progn
+      (put mode
+           'flyspell-mode-predicate
+           'wucuo-generic-check-word-predicate))))
+
+;;;###autoload
+(defun wucuo-start (&optional force)
+  "Turn on wucuo to spell check code.
+If FORCE is t, the major mode's own predicate setup."
   (interactive)
+  (when force
+    (dolist (mode wucuo-major-modes-to-setup-by-force)
+      (wucuo-setup-major-mode mode)))
+
+  ;; setup flyspell if the major mode does not have per its own flyspell setup.
+  ;; to be honest, no other major mode can do better than this program
   (setq flyspell-generic-check-word-predicate
         #'wucuo-generic-check-word-predicate)
+
   (flyspell-mode 1))
 
 (provide 'wucuo)
