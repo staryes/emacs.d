@@ -15,11 +15,18 @@
        (elpy-enable)
 
        ;; Use IPython for REPL
-       (setq python-shell-interpreter "jupyter"
-             python-shell-interpreter-args "console --simple-prompt"
-             python-shell-prompt-detect-failure-warning nil)
-       (add-to-list 'python-shell-completion-native-disabled-interpreters
-                    "jupyter")
+       (setq elpy-shell-echo-output nil
+      python-shell-interpreter "ipython"
+      python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i";
+      python-shell-prompt-detect-failure-warning nil)
+
+       ;; (setq python-shell-interpreter "jupyter" ;
+       ;;       python-shell-interpreter-args "console --simple-prompt " ;
+       ;;       python-shell-prompt-detect-failure-warning nil)
+                                        ;
+       (add-to-list 'python-shell-completion-native-disabled-interpreters ;
+                    "jupyter")                                            ;
+
        
        ;; Enable Flycheck
        (when (require 'flycheck nil t)

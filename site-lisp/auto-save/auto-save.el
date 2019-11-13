@@ -115,6 +115,7 @@
                                "\\.svg"
                                "\\.ico"
                                "\\.gpg"
+                               "\\.py"
                                "archive-contents")
   "List of regexps and predicates for filenames excluded from the auto save list.
 When a filename matches any of the regexps or satisfies any of the

@@ -103,7 +103,7 @@
   (require-init 'init-hippie-expand)
   (require-init 'init-windows)
   (require-init 'init-markdown t)
-  ;(require-init 'init-javascript t)
+  (require-init 'init-javascript t)
   (require-init 'init-org t)
   (require-init 'init-css t)
   (require-init 'init-python t)
@@ -112,6 +112,12 @@
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
+  (when *linux*
+    (require-init 'init-ros)
+    (require-init 'init-arduino))
+  (require-init 'init-matlab-mode)
+ 
+
   (require-init 'init-gud t)
   (require-init 'init-linum-mode)
   (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
