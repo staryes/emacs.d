@@ -7,7 +7,36 @@
   '(progn
      ;; run command `pip install jedi flake8 importmagic` in shell,
      ;; or just check https://github.com/jorgenschaefer/elpy
-     (elpy-enable)
+     (unless (or (is-buffer-file-temp)
+                 (not buffer-file-name)
+                 ;; embed python code in org file
+                 (string= (file-name-extension buffer-file-name) "org"))
+
+       (elpy-enable)
+
+       ;; Use IPython for REPL
+       (setq elpy-shell-echo-output nil
+      python-shell-interpreter "ipython"
+      python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i";
+      python-shell-prompt-detect-failure-warning nil)
+
+       ;; (setq python-shell-interpreter "jupyter" ;
+       ;;       python-shell-interpreter-args "console --simple-prompt " ;
+       ;;       python-shell-prompt-detect-failure-warning nil)
+                                        ;
+       (add-to-list 'python-shell-completion-native-disabled-interpreters ;
+                    "jupyter")                                            ;
+
+       
+       ;; Enable Flycheck
+       (when (require 'flycheck nil t)
+         (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+         (add-hook 'elpy-mode-hook 'flycheck-mode)) 
+
+       ;; Enable autopep8
+       (require 'py-autopep8)
+       (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+       )
 
      ;; Use IPython for REPL
      (setq python-shell-interpreter "ipython"
