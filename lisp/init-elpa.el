@@ -274,6 +274,9 @@
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
 (require-package 'elpy)
+(require-package 'flycheck)
+(require-package 'py-autopep8)
+(require-package 'ein)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
@@ -329,6 +332,7 @@
   (require-package 'monokai-theme)
   (require-package 'molokai-theme) ; recommended
   (require-package 'moe-theme)
+  (require-package 'nyan-mode)
   (require-package 'cyberpunk-theme) ; recommended
   (require-package 'ample-theme)
   (require-package 'gotham-theme)
