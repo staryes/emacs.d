@@ -115,7 +115,7 @@
   (when *linux*
     (require-init 'init-ros)
     (require-init 'init-arduino))
-  (require-init 'init-matlab-mode)
+  ;(require-init 'init-matlab-mode)
  
 
   (require-init 'init-gud t)
