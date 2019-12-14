@@ -302,7 +302,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'elpy)
 (require-package 'flycheck)
 (require-package 'py-autopep8)
-;(require-package 'blacken)
 (require-package 'ein)
 (require-package 'legalese)
 (require-package 'simple-httpd)
@@ -379,6 +378,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
   (require-package 'material-theme)
   (require-package 'gruvbox-theme)
   (require-package 'moe-theme)
+  (require-package 'nyan-mode)
   (require-package 'cyberpunk-theme) ; recommended
   (require-package 'ample-theme)
   (require-package 'dracula-theme) ; recommended
