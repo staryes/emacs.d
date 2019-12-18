@@ -114,8 +114,10 @@
   (require-init 'init-cc-mode t)
   (when *linux*
     (require-init 'init-ros)
-    (require-init 'init-arduino))
-  (require-init 'init-matlab-mode)
+    ;(require-init 'init-arduino)
+    )
+  (when *is-a-mac*
+    (require-init 'init-matlab-mode))
  
 
   (require-init 'init-gud t)
