@@ -353,6 +353,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'benchmark-init)
 (require-package 'langtool) ; check grammer
 (require-package 'typescript-mode)
+;(require-package 'matlab-mode) 
 (require-package 'define-word)
 (require-package 'nyan-mode)
 ;; {{ Fixed expiring GNU ELPA keys
