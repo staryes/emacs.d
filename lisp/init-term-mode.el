@@ -56,8 +56,8 @@
 ;; check `term-bind-key-alist' for key bindings
 (eval-after-load 'multi-term
   '(progn
-     (dolist (p '(("C-p" . term-send-up)
-                  ("C-n" . term-send-down)
+     (dolist (p '(("C-p" . term-send-ctrl-up)
+                  ("C-n" . term-send-ctrl-down)
                   ("C-s" . swiper)
                   ("C-r" . term-send-reverse-search-history)
                   ("C-m" . term-send-raw)

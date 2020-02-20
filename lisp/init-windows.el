@@ -147,4 +147,13 @@ Always focus on bigger window."
       (delete-other-windows)
     (winner-undo)))
 
+(defun switch-to-minibuffer ()
+  "Switch to minibuffer window."
+  (interactive)
+  (if (active-minibuffer-window)
+      (select-window (active-minibuffer-window))
+    (error "Minibuffer is not active")))
+
+(global-set-key "\C-co" 'switch-to-minibuffer) ;; Bind to `C-c o'
+
 (provide 'init-windows)
