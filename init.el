@@ -113,7 +113,7 @@
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
   (when *linux*
-    (require-init 'init-ros)
+    ;(require-init 'init-ros)
     ;(require-init 'init-arduino)
     )
   (when *is-a-mac*
@@ -151,7 +151,7 @@
   (require-init 'init-writting t)
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
-  (require-init 'init-evil) ; init-evil dependent on init-clipboard
+;  (require-init 'init-evil) ; init-evil dependent on init-clipboard
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
