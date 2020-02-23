@@ -207,4 +207,11 @@ It's value could be customized liked \"/usr/bin/firefox\".
            ;; @see http://irreal.org/blog/1
            org-src-fontify-natively t)))
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   ;(julia . t)
+   (python . t)
+   (jupyter . t)))
+
 (provide 'init-org)

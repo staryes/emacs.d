@@ -18,6 +18,7 @@
        (setq elpy-shell-echo-output nil
       python-shell-interpreter "ipython"
       python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i";
+;      python-shell-interpreter-args "--simple-prompt -i"
       python-shell-prompt-detect-failure-warning nil)
 
        ;; (setq python-shell-interpreter "jupyter" ;
@@ -27,7 +28,6 @@
        (add-to-list 'python-shell-completion-native-disabled-interpreters ;
                     "jupyter")                                            ;
 
-       
        ;; Enable Flycheck
        (when (require 'flycheck nil t)
          (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
@@ -38,21 +38,21 @@
        (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
        )
 
-     ;; Use IPython for REPL
-     (setq python-shell-interpreter "ipython"
-           python-shell-interpreter-args "--simple-prompt -i"
-           python-shell-prompt-detect-failure-warning nil)
-     (add-to-list 'python-shell-completion-native-disabled-interpreters
-                  "jupyter")
+     ;; ;; Use IPython for REPL
+     ;; (setq python-shell-interpreter "ipython"
+     ;;       python-shell-interpreter-args "--simple-prompt -i"
+     ;;       python-shell-prompt-detect-failure-warning nil)
+     ;; (add-to-list 'python-shell-completion-native-disabled-interpreters
+     ;;              "jupyter")
 
-     ;; Enable Flycheck
-     (when (require 'flycheck nil t)
-       (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-       (add-hook 'elpy-mode-hook 'flycheck-mode))
+     ;; ;; Enable Flycheck
+     ;; (when (require 'flycheck nil t)
+     ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+     ;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
-     ;; Enable autopep8
-     (require 'py-autopep8)
-     (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+     ;; ;; Enable autopep8
+     ;; (require 'py-autopep8)
+     ;; (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
      
      ;; http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
