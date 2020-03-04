@@ -305,6 +305,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'flycheck)
 (require-package 'py-autopep8)
 (require-package 'ein)
+(require-package 'jupyter)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
