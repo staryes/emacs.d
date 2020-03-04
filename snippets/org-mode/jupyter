@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Source Block emacs-jupyter
+# key: jupyter
+# --
+#+NAME: emacs-jupyter
+#+BEGIN_SRC jupyter-python :session py
+$0
+#+END_SRC

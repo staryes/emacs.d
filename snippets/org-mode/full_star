@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: full star
+# key: ＊
+# --
+* $0
