@@ -10,14 +10,20 @@
     ad-do-it))
 (ad-activate 'term-sentinel)
 
-;; always use bash
 
-;; try to use zsh
-(defvar my-term-program "/bin/zsh")
-;; (defadvice ansi-term (before force-bash)
-;;   (interactive (list my-term-program))
-;;   )
-;; (ad-activate 'ansi-term)
+(when *is-a-mac*
+  ;; try to use zsh
+  (defvar my-term-program "/bin/zsh")
+  )
+
+;; always use bash
+(when *linux*
+  (defvar my-term-program "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-program))
+  )
+  (ad-activate 'ansi-term)
+)
 
 ;; utf8
 (defun my-term-use-utf8 ()
