@@ -14,10 +14,10 @@
 (when *is-a-mac*
   ;; try to use zsh
   (defvar my-term-program "/bin/zsh")
-  (defadvice ansi-term
-      (interactive (list my-term-program))
-    )
-  (ad-activate 'ansi-term)
+  ;; (defadvice ansi-term
+  ;;     (interactive (list my-term-program))
+  ;;   )
+  ;; (ad-activate 'ansi-term)
   )
 
 ;; always use bash
