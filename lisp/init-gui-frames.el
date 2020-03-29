@@ -20,7 +20,7 @@
   (menu-bar-mode -1))
 
 (when *is-a-mac*
-  (set-frame-position (selected-frame) 40 0)
+  (set-frame-position (selected-frame) 92 0)
   (set-frame-size (selected-frame) 167 53))
 
 (provide 'init-gui-frames)

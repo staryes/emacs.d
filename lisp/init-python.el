@@ -18,7 +18,6 @@
        (setq elpy-shell-echo-output nil
       python-shell-interpreter "ipython"
       python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i";
-;      python-shell-interpreter-args "--simple-prompt -i"
       python-shell-prompt-detect-failure-warning nil)
 
        ;; (setq python-shell-interpreter "jupyter" ;
