@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: do it tomorrow
+# key: tomorrow
+# --
+*** $1[/]
+- [ ] $0
+- [ ] What I learned today
