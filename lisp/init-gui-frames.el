@@ -21,6 +21,6 @@
 
 (when *is-a-mac*
   (set-frame-position (selected-frame) 92 0)
-  (set-frame-size (selected-frame) 167 49))
+  (set-frame-size (selected-frame) 173 52))
 
 (provide 'init-gui-frames)

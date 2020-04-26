@@ -1,7 +1,8 @@
 # -*- mode: snippet -*-
 # name: do it tomorrow
-# key: tomorrow
+# key: tmrw
 # --
 *** $1[/]
 - [ ] $0
-- [ ] What I learned today
+- [ ] Today I Learned
+  + $2

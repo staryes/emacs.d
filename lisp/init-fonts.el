@@ -29,7 +29,6 @@
             ;     :size 18.0
                  ))))
 (when *linux*
-  (if (display-graphic-p)
    (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
   ;; configure Chinese characters to align tables
   (dolist (charset '(kana han symbol cjk-misc bopomofo))
@@ -37,7 +36,7 @@
                       charset
                       (font-spec :family "Noto Sans CJK JP"
                                  :size 24
-                                 )))))
+                      ))))
 
 
 (when *win64*

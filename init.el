@@ -156,8 +156,8 @@
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
   (require-init 'init-ediff)
-
-  (require-init 'init-fonts t)
+  (when (display-graphic-p)
+    (require-init 'init-fonts t))
   (require-init 'init-nyan-mode t)
   (require-init 'init-define-word t)
 
