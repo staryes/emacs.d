@@ -107,9 +107,9 @@
   (require-init 'init-hippie-expand)
   (require-init 'init-windows)
   (require-init 'init-markdown t)
-  (require-init 'init-javascript t)
+;  (require-init 'init-javascript t)
   (require-init 'init-org t)
-  (require-init 'init-css t)
+;  (require-init 'init-css t)
   (require-init 'init-python t)
   (require-init 'init-lisp t)
   (require-init 'init-elisp t)
@@ -118,9 +118,6 @@
   (when *linux*
     ;(require-init 'init-ros)
     ;(require-init 'init-arduino)
-    )
-  (when *is-a-mac*
-    ;(require-init 'init-matlab-mode)
     )
   (require-init 'init-gud t)
   (require-init 'init-linum-mode)
@@ -167,7 +164,9 @@
     (require-init 'init-fonts t))
   (require-init 'init-nyan-mode t)
   (require-init 'init-define-word t)
-
+  (when *is-a-mac*
+  ;  (require-init 'init-matlab-mode t)
+    )
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup

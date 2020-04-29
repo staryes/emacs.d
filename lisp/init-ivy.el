@@ -2,45 +2,6 @@
 
 (ivy-mode 1) ; it enables ivy UI for `kill-buffer'
 
-(eval-after-load 'counsel
-  '(progn
-     ;; automatically pick up cygwin cli tools for counse
-     (when *win64*
-       (let* ((path (getenv "path"))
-              (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
-                           (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
-                           (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
-         ;; `cygpath' could be nil on Windows
-         (when cygpath
-           (unless (string-match-p cygpath counsel-git-cmd)
-
-             (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
-           (unless (string-match-p cygpath counsel-git-grep-cmd-default)
-             (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
-           ;; ;; git-log does not work
-           ;; (unless (string-match-p cygpath counsel-git-log-cmd)
-           ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
-           ;;                                     cygpath
-           ;;                                     "/cat "
-           ;;                                     cygpath
-           ;;                                     "/git log --grep '%s'")))
-           (unless (string-match-p cygpath counsel-grep-base-command)
-             (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command))))))
-
-     ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
-     ;; press "M-o" to choose ivy action
-     (ivy-set-actions
-      'counsel-find-file
-      '(("j" find-file-other-frame "other frame")
-        ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-        ("x" counsel-find-file-extern "open externally")
-        ("d" delete-file "delete")
-        ("r" counsel-find-file-as-root "open as root")))))
-
-;; not good experience
-;; (setq ivy-use-virtual-buffers t)
-(global-set-key (kbd "C-c C-r") 'ivy-resume)
-=======
 (with-eval-after-load 'counsel
   ;; automatically pick up cygwin cli tools for counsel
   (cond
