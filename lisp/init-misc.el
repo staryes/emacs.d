@@ -754,13 +754,13 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 ;; {{
-(local-require 'typewriter-mode)
-(defun toggle-typewriter ()
-  "Turn on/off typewriter."
-  (interactive)
-  (if (bound-and-true-p typewriter-mode)
-      (typewriter-mode -1)
-    (typewriter-mode 1)))
+;; (local-require 'typewriter-mode)
+;; (defun toggle-typewriter ()
+;;   "Turn on/off typewriter."
+;;   (interactive)
+;;   (if (bound-and-true-p typewriter-mode)
+;;       (typewriter-mode -1)
+;;     (typewriter-mode 1)))
 ;; }}
 
 ;; @see https://github.com/szermatt/emacs-bash-completion
