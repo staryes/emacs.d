@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
-# name: Source Block emacs-jupyter
+# name: jupyter-python
 # key: jupyter
 # --
-#+BEGIN_SRC jupyter-python :session py
+#+begin_src jupyter-python :session ${1:py} :result ${2:output} :exports ${3:both}
 $0
-#+END_SRC
+#+end_src

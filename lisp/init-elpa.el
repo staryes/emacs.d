@@ -122,9 +122,10 @@
 (setq package-archives
       '(
         ;; uncomment below line if you need use GNU ELPA
-        ;; ("gnu" . "https://elpa.gnu.org/packages/")
+        ;;("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")
 
         ;; Use either 163 or tsinghua mirror repository when official melpa
         ;; is slow or shutdown.
@@ -310,7 +311,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'elpy)
 (require-package 'flycheck)
 (require-package 'py-autopep8)
-(require-package 'ein)
+;(require-package 'ein)
 (require-package 'jupyter)
 (require-package 'legalese)
 (require-package 'simple-httpd)

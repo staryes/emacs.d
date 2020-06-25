@@ -1,4 +1,4 @@
-;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; (advice-add #'package-initialize :after #'update-load-path)
 
 ;; Without this comment emacs25 adds (package-initialize) here
@@ -165,7 +165,7 @@
   (require-init 'init-writting t)
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
-  ;(require-init 'init-evil) ; init-evil dependent on init-clipboard
+  ;;(require-init 'init-evil) ; init-evil dependent on init-clipboard
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration

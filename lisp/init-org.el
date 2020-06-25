@@ -33,6 +33,9 @@
 (setq org2nikola-output-root-directory "~/.config/nikola")
 ;; }}
 
+;; using dvisvgm to show formula in preview latex 
+(setq org-latex-create-formula-image-program 'dvisvgm)
+
 (defun org-demote-or-promote (&optional is-promote)
   "Demote or promote current org tree."
   (interactive "P")
