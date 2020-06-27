@@ -510,7 +510,7 @@ _w_ where is something defined
   ("w" where-is))
 (global-set-key (kbd "C-c C-q") 'hydra-describe/body)
 
-(defhydra hydra-evil-comma (:color blue)
+(defhydra hydra-evil-comma (:color blue :hint nil)
 
   ;("bf" beginning-of-defun)
   ("bu" backward-up-list)
