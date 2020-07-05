@@ -1084,9 +1084,9 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ pomodoro
 (with-eval-after-load 'pomodoro
   (setq pomodoro-play-sounds nil) ; *.wav is not installed
-  (setq pomodoro-break-time 2)
-  (setq pomodoro-long-break-time 5)
-  (setq pomodoro-work-time 15))
+  (setq pomodoro-break-time 5)
+  (setq pomodoro-long-break-time 15)
+  (setq pomodoro-work-time 25))
 
 (unless (featurep 'pomodoro)
   (require 'pomodoro)

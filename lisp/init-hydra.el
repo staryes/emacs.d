@@ -510,7 +510,7 @@ _w_ where is something defined
   ("w" where-is))
 (global-set-key (kbd "C-c C-q") 'hydra-describe/body)
 
-(defhydra hydra-evil-comma (:color blue :hint nil)
+(defhydra hydra-evil-comma (:color blue)
 
   ;("bf" beginning-of-defun)
   ("bu" backward-up-list)
@@ -553,7 +553,7 @@ _w_ where is something defined
   ("cc" evilnc-copy-and-comment-lines)
   ;("cp" my-evilnc-comment-or-uncomment-paragraphs)
   ;("ct" evilnc-comment-or-uncomment-html-tag) ; evil-nerd-commenter v3.3.0 required
-  ("ic" my-imenu-comments)
+  ;("ic" my-imenu-comments)
   ;; {{ window move(
   ;("wh" evil-window-left)
   ;("wl" evil-window-right)
