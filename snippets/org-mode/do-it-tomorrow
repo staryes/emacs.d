@@ -3,7 +3,10 @@
 # key: tmrw
 # --
 *** $1[/]
-- [ ] $0
+- [ ] paper reading
+- [ ] paper writing
+- [ ] coding
+- [ ] courses
 - [ ] Today I Learned
   + $2
 - [ ] Do It Tomorrow

@@ -612,7 +612,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; {{ auto-save.el
 (local-require 'auto-save)
 (add-to-list 'auto-save-exclude 'file-too-big-p t)
-(setq auto-save-idle 2) ; 2 seconds
+(setq auto-save-idle 5) ; 3 seconds
 (auto-save-enable)
 (setq auto-save-slient t)
 ;; }}

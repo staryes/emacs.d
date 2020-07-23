@@ -510,7 +510,7 @@ _w_ where is something defined
   ("w" where-is))
 (global-set-key (kbd "C-c C-q") 'hydra-describe/body)
 
-(defhydra hydra-evil-comma (:color blue)
+(defhydra hydra-evil-semicolon (:color blue)
 
   ;("bf" beginning-of-defun)
   ("bu" backward-up-list)
@@ -692,7 +692,7 @@ _w_ where is something defined
   ("ycr" my-yas-reload-all)
   ("wf" popup-which-function)
   )
-(global-set-key (kbd "C-,") 'hydra-evil-comma/body)
+(global-set-key (kbd "C-;") 'hydra-evil-semicolon/body)
 
-(provide 'init-hydr)
-;;; init-hydra.el ends he
+(provide 'init-hydra)
+;;; init-hydra.el ends here

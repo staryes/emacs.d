@@ -111,10 +111,13 @@
     workgroups2
     zoutline
     company-c-headers
-    company-statistics)
+    company-statistics
+    zotxt
+    org-roam
+    org-ref)
   "Packages to install from melpa-unstable.")
 
-(defvar melpa-stable-banned-packages nil
+(defvar melpa-stable-banned-packages t
   "Banned packages from melpa-stable")
 
 ;; I don't use any packages from GNU ELPA because I want to minimize
@@ -122,9 +125,9 @@
 (setq package-archives
       '(
         ;; uncomment below line if you need use GNU ELPA
-        ;;("gnu" . "https://elpa.gnu.org/packages/")
+        ("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ;("melpa-stable" . "https://stable.melpa.org/packages/")
         ("org" . "http://orgmode.org/elpa/")
 
         ;; Use either 163 or tsinghua mirror repository when official melpa
@@ -363,6 +366,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'define-word)
 (require-package 'nyan-mode)
 (require-package 'edit-server)
+(require-package 'org-roam)
 
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
