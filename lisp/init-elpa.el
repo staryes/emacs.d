@@ -112,12 +112,11 @@
     zoutline
     company-c-headers
     company-statistics
-    zotxt
-    org-roam
-    org-ref)
+    ox
+    )
   "Packages to install from melpa-unstable.")
 
-(defvar melpa-stable-banned-packages t
+(defvar melpa-stable-banned-packages nil
   "Banned packages from melpa-stable")
 
 ;; I don't use any packages from GNU ELPA because I want to minimize
@@ -127,7 +126,7 @@
         ;; uncomment below line if you need use GNU ELPA
         ("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
-        ;("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("org" . "http://orgmode.org/elpa/")
 
         ;; Use either 163 or tsinghua mirror repository when official melpa
@@ -199,7 +198,9 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
       ((string= archive "melpa")
        (or (member package melpa-include-packages)
            ;; color themes are welcomed
-           (string-match-p "-theme" (format "%s" package))))
+;           (string-match-p "-theme" (format "%s" package))
+           (string-match-p "org-" (format "%s" package))
+           (string-match-p "ox-" (format "%s" package))))
 
       ;; I'm not picky on other repositories
       (t t)))
