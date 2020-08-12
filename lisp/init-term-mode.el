@@ -1,9 +1,11 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun my-kill-process-buffer-when-exit (proc)
-  "Kill buffer of process PROC when it's terminated."
-  (when (memq (process-status proc) '(signal exit))
-    (kill-buffer (process-buffer proc))))
+(defun my-kill-process-buffer-when-exit (process event)
+  "Kill buffer of PROCESS when it's terminated.
+EVENT is ignored."
+  (ignore event)
+  (when (memq (process-status process) '(signal exit))
+    (kill-buffer (process-buffer process))))
 
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
 ;; Enable auto-completion in `shell'.
@@ -15,21 +17,17 @@
   (native-complete-setup-bash))
 
 ;; `bash-completion-tokenize' can handle garbage output of "complete -p"
-(defadvice bash-completion-tokenize (around bash-completion-tokenize-hack activate)
-  (let* ((args (ad-get-args 0))
-         (beg (nth 0 args))
+(defun my-bash-completion-tokenize-hack (orig-fun &rest args)
+  "Original code extracts tokens line by line of output of \"complete -p\"."
+  (let* ((beg (nth 0 args))
          (end (nth 1 args)))
-    ;; original code extracts tokens line by line of output of "complete -p"
     (cond
      ((not (string-match-p "^complete " (buffer-substring beg end)))
-      ;; filter out some wierd lines
-      (setq ad-return-value nil))
+      ;; filter out some weird lines
+      nil)
      (t
-      ad-do-it))))
-
-(defun my-exit-shell-process (process event)
-  "Called when the shell PROCESS is stopped.  EVENT is ignored."
-  (my-kill-process-buffer-when-exit process))
+      (apply orig-fun args)))))
+(advice-add 'bash-completion-tokenize :around #'my-bash-completion-tokenize-hack)
 
 (defun shell-mode-hook-setup ()
   "Set up `shell-mode'."
@@ -41,12 +39,11 @@
   ;; try to kill buffer when exit shell
   (let* ((proc (get-buffer-process (current-buffer)))
          (shell (file-name-nondirectory (car (process-command proc)))))
-    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
+    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding to
     (unless (string-match shell-dumb-shell-regexp shell)
-      (set-process-sentinel proc #'my-exit-shell-process))))
+      (set-process-sentinel proc #'my-kill-process-buffer-when-exit))))
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
-
 
 (defun eshell-mode-hook-setup ()
   "Set up `eshell-mode'."
@@ -55,8 +52,7 @@
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-(defadvice term-sentinel (after term-sentinel-after-hack activate)
-  (my-kill-process-buffer-when-exit (nth 0 (ad-get-args 0))))
+(advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
 
 (when *is-a-mac*
@@ -76,6 +72,8 @@
   )
   (ad-activate 'ansi-term)
 )
+
+:;(defvar my-term-program "/bin/bash")
 
 ;; utf8
 (defun my-term-use-utf8 ()
@@ -131,6 +129,21 @@
                ("M-." . term-send-raw-meta)))
     (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
     (add-to-list 'term-bind-key-alist p)))
+
+;; {{ comint-mode
+(with-eval-after-load 'comint
+  ;; Don't echo passwords when communicating with interactive programs:
+  ;; Github prompt is like "Password for 'https://user@github.com/':"
+  (setq comint-password-prompt-regexp
+        (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
+  (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt))
+(defun comint-mode-hook-setup ()
+  ;; look up shell command history
+  (local-set-key (kbd "M-n") 'counsel-shell-history)
+  ;; Don't show trailing whitespace in REPL.
+  (local-set-key (kbd "M-;") 'comment-dwim))
+(add-hook 'comint-mode-hook 'comint-mode-hook-setup)
+
 ;; }}
 
 (provide 'init-term-mode)

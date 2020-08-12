@@ -3,23 +3,35 @@
 ;; my private snippets, should be placed before enabling yasnippet
 (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
 
-(defun yasnippet-generic-setup-for-mode-hook ()
+(defun my-enable-yas-minor-mode ()
+  "Enable `yas-minor-mode'."
   (unless (is-buffer-file-temp) (yas-minor-mode 1)))
 
-(add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'text-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
+(add-hook 'text-mode-hook 'my-enable-yas-minor-mode)
 ;; {{ modes do NOT inherit from prog-mode
-(add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'web-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'scss-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'cmake-mode-hook 'my-enable-yas-minor-mode)
+(add-hook 'web-mode-hook 'my-enable-yas-minor-mode)
+(add-hook 'scss-mode-hook 'my-enable-yas-minor-mode)
 ;; }}
 
+(defun my-yas-expand-from-trigger-key-hack (orig-func &rest args)
+  "Tab key won't trigger yasnippet expand in org heading."
+  (cond
+   ;; skip yas expand in org heading
+   ((and (eq major-mode 'org-mode)
+         (string-match "^org-level-" (format "%S" (get-text-property (point) 'face))))
+    (org-cycle))
+   (t
+    (apply orig-func args))))
+(advice-add 'yas-expand-from-trigger-key :around #'my-yas-expand-from-trigger-key-hack)
+
 (defun my-yas-reload-all ()
-  "Compile and reload yasnippets.  Run the command after adding new snippets."
+  "Compile and reload snippets.  Run the command after adding new snippets."
   (interactive)
   (yas-compile-directory (file-truename (concat my-emacs-d "snippets")))
   (yas-reload-all)
-  (yas-minor-mode 1))
+  (my-enable-yas-minor-mode))
 
 (defun my-yas-field-to-statement(str sep)
   "If STR=='a.b.c' and SEP=' && ', 'a.b.c' => 'a && a.b && a.b.c'"
@@ -99,19 +111,18 @@
 (with-eval-after-load 'yasnippet
   ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
   (setq-default mode-require-final-newline nil)
-  ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
-
   ;; Use `yas-dropdown-prompt' if possible. It requires `dropdown-list'.
   (setq yas-prompt-functions '(yas-dropdown-prompt
                                yas-ido-prompt
                                yas-completing-prompt))
 
-  ;; use `yas-completing-prompt' when ONLY when `M-x yas-insert-snippet'
-  ;; thanks to capitaomorte for providing the trick.
-  (defadvice yas-insert-snippet (around use-completing-prompt activate)
+  ;; Use `yas-completing-prompt' when ONLY when "M-x yas-insert-snippet"
+  ;; Thanks to capitaomorte for providing the trick.
+  (defun my-yas-insert-snippet-hack (orig-func &rest args)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
     (let* ((yas-prompt-functions '(yas-completing-prompt)))
-      ad-do-it))
+      (apply orig-func args)))
+  (advice-add 'yas-insert-snippet :around #'my-yas-insert-snippet-hack)
 
   (when (and  (file-exists-p my-yasnippets)
               (not (member my-yasnippets yas-snippet-dirs)))

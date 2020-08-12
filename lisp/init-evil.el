@@ -1,39 +1,64 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-;;
+
 ;; My frequently used commands are listed here
 
 ;; enable evil-mode
 (evil-mode 1)
 
-;; @see https://github.com/syl20bnr/evil-iedit-state#key-bindings
-;; Don't know why it's not loaded if placed in elpa
-(local-require 'evil-iedit-state)
+;; {{ replace undo-tree with undo-fu
+;; @see https://github.com/emacs-evil/evil/issues/1074
+;; (global-undo-tree-mode -1)
+(my-ensure 'undo-fu)
+;; copied from doom-emacs
+(define-minor-mode undo-fu-mode
+  "Enables `undo-fu' for the current session."
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map [remap undo] #'undo-fu-only-undo)
+            (define-key map [remap redo] #'undo-fu-only-redo)
+            (define-key map (kbd "C-_")     #'undo-fu-only-undo)
+            (define-key map (kbd "M-_")     #'undo-fu-only-redo)
+            (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
+            (define-key map (kbd "C-x r u") #'undo-fu-session-save)
+            (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
+            map)
+  :init-value nil
+  :global t)
+(undo-fu-mode 1)
+;; }}
+
+;; Store more undo history to prevent loss of data
+(setq undo-limit 8000000
+      undo-strong-limit 8000000
+      undo-outer-limit 8000000)
 
 (defvar my-use-m-for-matchit nil
   "If t, use \"m\" key for `evil-matchit-mode'.
-And \"%\" key is also retored to `evil-jump-item'.")
+And \"%\" key is also restored to `evil-jump-item'.")
 
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (global-evil-surround-mode 1)
 (defun evil-surround-prog-mode-hook-setup ()
-  (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)
+  "Set up surround shortcuts."
+  (cond
+   ((memq major-mode '(sh-mode))
+    (push '(?$ . ("$(" . ")")) evil-surround-pairs-alist))
+   (t
+    (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
+
+  (when (memq major-mode '(org-mode))
+    (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
+    (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
+
+  (when (memq major-mode '(emacs-lisp-mode))
+    (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
+    (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
+
+  (when (derived-mode-p 'js-mode)
+    (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
+
+  ;; generic
   (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
-
-(defun evil-surround-js-mode-hook-setup ()
-  ;; ES6
-  (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
-(add-hook 'js-mode-hook 'evil-surround-js-mode-hook-setup)
-
-(defun evil-surround-emacs-lisp-mode-hook-setup ()
-  (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
-  (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
-(add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
-
-(defun evil-surround-org-mode-hook-setup ()
-  (push '(93 . ("[[" . "]]")) evil-surround-pairs-alist) ; ]
-  (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
-(add-hook 'org-mode-hook 'evil-surround-org-mode-hook-setup)
 ;; }}
 
 ;; {{ For example, press `viW*`
@@ -52,7 +77,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
-(defmacro define-and-bind-text-object (key start-regex end-regex)
+(defmacro my-evil-define-and-bind-text-object (key start-regex end-regex)
   (let* ((inner-name (make-symbol "inner-name"))
          (outer-name (make-symbol "outer-name")))
     `(progn
@@ -63,18 +88,16 @@ And \"%\" key is also retored to `evil-jump-item'.")
        (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
-;; between dollar signs:
-(define-and-bind-text-object "$" "\\$" "\\$")
 ;; between equal signs
-(define-and-bind-text-object "=" "=" "=")
+(my-evil-define-and-bind-text-object "=" "=" "=")
 ;; between pipe characters:
-(define-and-bind-text-object "|" "|" "|")
+(my-evil-define-and-bind-text-object "|" "|" "|")
 ;; regular expression
-(define-and-bind-text-object "/" "/" "/")
+(my-evil-define-and-bind-text-object "/" "/" "/")
 ;; trimmed line
-(define-and-bind-text-object "l" "^ *" " *$")
+(my-evil-define-and-bind-text-object "l" "^ *" " *$")
 ;; angular template
-(define-and-bind-text-object "r" "\{\{" "\}\}")
+(my-evil-define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
 
@@ -87,7 +110,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
 ;;    "/test/back.exe"
 ;;    "C:hello\\hello\\world\\test.exe"
 ;;    "D:blah\\hello\\world\\base.exe"
-(defun evil-filepath-is-separator-char (ch)
+(defun my-evil-path-is-separator-char (ch)
   "Check ascii table that CH is slash characters.
 If the character before and after CH is space or tab, CH is NOT slash"
   (let* (rlt prefix-ch postfix-ch)
@@ -103,8 +126,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (setq rlt t))
     rlt))
 
-(defun evil-filepath-not-path-char (ch)
-  "Check ascii table for charctater."
+(defun my-evil-path-not-path-char (ch)
+  "Check ascii table for character CH."
   (or (and (<= 0 ch) (<= ch 32))
       (memq ch
             '(34 ; double quotes
@@ -120,30 +143,30 @@ If the character before and after CH is space or tab, CH is NOT slash"
               ?}
               127))))
 
-(defun evil-filepath-calculate-path (b e)
+(defun my-evil-path-calculate-path (b e)
   (let* (rlt f)
     (when (and b e)
       (setq b (+ 1 b))
       (when (save-excursion
               (goto-char e)
-              (setq f (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+              (setq f (my-evil-path-search-forward-char 'my-evil-path-is-separator-char t))
               (and f (>= f b)))
         (setq rlt (list b (+ 1 f) (- e 1)))))
     rlt))
 
-(defun evil-filepath-get-path-already-inside ()
+(defun my-evil-path-get-path-already-inside ()
   (let* (b e)
     (save-excursion
-      (setq b (evil-filepath-search-forward-char 'evil-filepath-not-path-char t)))
+      (setq b (my-evil-path-search-forward-char 'my-evil-path-not-path-char t)))
     (save-excursion
-      (when (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char))
+      (when (setq e (my-evil-path-search-forward-char 'my-evil-path-not-path-char))
         (goto-char (- e 1))
         ;; example: hello/world,
         (if (memq (following-char) '(?, ?.))
             (setq e (- e 1)))))
-    (evil-filepath-calculate-path b e)))
+    (my-evil-path-calculate-path b e)))
 
-(defun evil-filepath-search-forward-char (fn &optional backward)
+(defun my-evil-path-search-forward-char (fn &optional backward)
   (let* (found
          rlt
          (limit (if backward (point-min) (point-max)))
@@ -161,24 +184,24 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (if found (setq rlt (point))))
     rlt))
 
-(defun evil-filepath-extract-region ()
-  "Find the closest file path"
+(defun my-evil-path-extract-region ()
+  "Find the closest file path."
   (let* (rlt b f1 f2)
-    (if (and (not (evil-filepath-not-path-char (following-char)))
-             (setq rlt (evil-filepath-get-path-already-inside)))
+    (if (and (not (my-evil-path-not-path-char (following-char)))
+             (setq rlt (my-evil-path-get-path-already-inside)))
         ;; maybe (point) is in the middle of the path
         t
       ;; need search forward AND backward to find the right path
       (save-excursion
         ;; path in backward direction
-        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+        (when (setq b (my-evil-path-search-forward-char #'my-evil-path-is-separator-char t))
           (goto-char b)
-          (setq f1 (evil-filepath-get-path-already-inside))))
+          (setq f1 (my-evil-path-get-path-already-inside))))
       (save-excursion
         ;; path in forward direction
-        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char))
+        (when (setq b (my-evil-path-search-forward-char #'my-evil-path-is-separator-char))
           (goto-char b)
-          (setq f2 (evil-filepath-get-path-already-inside))))
+          (setq f2 (my-evil-path-get-path-already-inside))))
       ;; pick one path as the final result
       (cond
        ((and f1 f2)
@@ -192,20 +215,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
     rlt))
 
-(evil-define-text-object evil-filepath-inner-text-object (&optional count begin end type)
+(evil-define-text-object my-evil-path-inner-text-object (&optional count begin end type)
   "File name of nearby path"
-  (let* ((selected-region (evil-filepath-extract-region)))
+  (let* ((selected-region (my-evil-path-extract-region)))
     (if selected-region
         (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
 
-(evil-define-text-object evil-filepath-outer-text-object (&optional NUM begin end type)
+(evil-define-text-object my-evil-path-outer-text-object (&optional count begin end type)
   "Nearby path."
-  (let* ((selected-region (evil-filepath-extract-region)))
-    (if selected-region
-        (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
+  (let* ((selected-region (my-evil-path-extract-region)))
+    (when selected-region
+      (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
 
-(define-key evil-inner-text-objects-map "f" 'evil-filepath-inner-text-object)
-(define-key evil-outer-text-objects-map "f" 'evil-filepath-outer-text-object)
+(define-key evil-inner-text-objects-map "f" 'my-evil-path-inner-text-object)
+(define-key evil-outer-text-objects-map "f" 'my-evil-path-outer-text-object)
 ;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
@@ -220,19 +243,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
-(defun toggle-org-or-message-mode ()
-  (interactive)
-  (if (eq major-mode 'message-mode)
-      (org-mode)
-    (if (eq major-mode 'org-mode) (message-mode))))
-
-;; (evil-set-initial-state 'org-mode 'emacs)
-
-;; As a general RULE, mode specific evil leader keys started
-;; with uppercased character or 'g' or special character except "=" and "-"
+;; As a general rule, mode specific evil leader keys started
+;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
-  "gl" 'outline-next-visible-heading
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
@@ -241,8 +255,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (evil-declare-key 'normal markdown-mode-map
   "gh" 'outline-up-heading
-  "gl" 'outline-next-visible-heading
-  (kbd "TAB") 'org-cycle)
+  (kbd "TAB") 'markdown-cycle)
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
 ;; You may delete this setup to use Evil NORMAL state always.
@@ -346,8 +359,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;; otherwise just go to first occurrence in buffer
        (t
         (my-search-defun-from-pos search (point-min)))))))
-;; use "gt", someone might prefer original `evil-goto-definition'
-(define-key evil-motion-state-map "gt" 'my-evil-goto-definition)
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
@@ -360,33 +371,32 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{
 (defvar evil-global-markers-history nil)
-(defadvice evil-set-marker (before evil-set-marker-before-hack activate)
-  (let* ((args (ad-get-args 0))
-         (c (nth 0 args))
-         (pos (or (nth 1 args) (point))))
-    ;; only rememeber global markers
-    (when (and (>= c ?A) (<= c ?Z) buffer-file-name)
-      (setq evil-global-markers-history
-            (delq nil
-                  (mapcar `(lambda (e)
-                             (unless (string-match (format "^%s@" (char-to-string ,c)) e)
-                               e))
-                          evil-global-markers-history)))
-      (setq evil-global-markers-history
-            (add-to-list 'evil-global-markers-history
-                         (format "%s@%s:%d:%s"
-                                 (char-to-string c)
-                                 (file-truename buffer-file-name)
-                                 (line-number-at-pos pos)
-                                 (string-trim (my-line-str))))))))
+(defun my-evil-set-marker-hack (char &optional pos advance)
+  "Place evil marker's position into history."
+  (unless pos (setq pos (point)))
+  ;; only rememeber global markers
+  (when (and (>= char ?A) (<= char ?Z) buffer-file-name)
+    (setq evil-global-markers-history
+          (delq nil
+                (mapcar `(lambda (e)
+                           (unless (string-match (format "^%s@" (char-to-string ,char)) e)
+                             e))
+                        evil-global-markers-history)))
+    (setq evil-global-markers-history
+          (add-to-list 'evil-global-markers-history
+                       (format "%s@%s:%d:%s"
+                               (char-to-string char)
+                               (file-truename buffer-file-name)
+                               (line-number-at-pos pos)
+                               (string-trim (my-line-str)))))))
+(advice-add 'evil-set-marker :before #'my-evil-set-marker-hack)
 
-(defadvice evil-goto-mark-line (around evil-goto-mark-line-hack activate)
-  (let* ((args (ad-get-args 0))
-         (c (nth 0 args))
+(defun my-evil-goto-mark-line-hack (orig-func &rest args)
+  "Place line marker into history."
+  (let* ((char (nth 0 args))
          (orig-pos (point)))
-
     (condition-case nil
-        ad-do-it
+        (apply orig-func args)
       (error (progn
                (when (and (eq orig-pos (point)) evil-global-markers-history)
                  (let* ((markers evil-global-markers-history)
@@ -397,7 +407,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                    (while (and (not found) (< i (length markers)))
                      (setq m (nth i markers))
                      (when (string-match (format "\\`%s@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'"
-                                                 (char-to-string c))
+                                                 (char-to-string char))
                                          m)
                        (setq file (match-string-no-properties 1 m))
                        (setq found (match-string-no-properties 2 m)))
@@ -405,6 +415,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                    (when file
                      (find-file file)
                      (counsel-etags-forward-line found)))))))))
+(advice-add 'evil-goto-mark-line :around #'my-evil-goto-mark-line-hack)
 
 (defun counsel-evil-goto-global-marker ()
   "Goto global evil marker."
@@ -428,10 +439,78 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (local-require 'general)
 (general-evil-setup t)
 
+;; {{
+(evil-define-text-object my-evil-a-statement (count &optional beg end type)
+  "Select a statement."
+  (list (my-skip-white-space (line-beginning-position) 1)
+        (line-end-position)))
+
+(evil-define-text-object my-evil-inner-statement (count &optional beg end type)
+  "Select inner statement."
+  (let* ((b (my-skip-white-space (line-beginning-position) 1))
+         (e (line-end-position)))
+    (list (save-excursion
+            (goto-char b)
+            (while (and (< (point) e) (not (eq (following-char) 61)))
+              (forward-char))
+            (cond
+             ((eq (point) e)
+              b)
+             (t
+              ;; skip '=' at point
+              (goto-char (my-skip-white-space (1+ (point)) 1))
+              (point))))
+          (cond
+           ((eq (char-before e) 59) ; ";"
+            (my-skip-white-space (1- e) -1))
+           (t
+            e)))))
+
+(define-key evil-outer-text-objects-map "v" #'my-evil-a-statement)
+(define-key evil-inner-text-objects-map "v" #'my-evil-inner-statement)
+;; }}
+
+;; {{ I select string inside single quote frequently
+(defun my-single-or-double-quote-range (count beg end type inclusive)
+  "Get maximum range of single or double quote text object.
+If INCLUSIVE is t, the text object is inclusive."
+  (let* ((s-range (evil-select-quote ?' beg end type count inclusive))
+         (d-range (evil-select-quote ?\" beg end type count inclusive))
+         (beg (min (nth 0 s-range) (nth 0 d-range)))
+         (end (max (nth 1 s-range) (nth 1 d-range))))
+    (setf (nth 0 s-range) beg)
+    (setf (nth 1 s-range) end)
+    s-range))
+
+(evil-define-text-object my-evil-a-single-or-double-quote (count &optional beg end type)
+  "Select a single-quoted expression."
+  :extend-selection t
+  (my-single-or-double-quote-range count beg end type t))
+
+(evil-define-text-object my-evil-inner-single-or-double-quote (count &optional beg end type)
+  "Select 'inner' single-quoted expression."
+  :extend-selection nil
+  (my-single-or-double-quote-range count beg end type nil))
+
+(define-key evil-outer-text-objects-map "i" #'my-evil-a-single-or-double-quote)
+(define-key evil-inner-text-objects-map "i" #'my-evil-inner-single-or-double-quote)
+;; }}
+
 ;; {{ use `,` as leader key
 (general-create-definer my-comma-leader-def
   :prefix ","
   :states '(normal visual))
+
+(defun my-rename-thing-at-point ()
+  "Rename thing at point."
+  (interactive)
+  (cond
+   ((derived-mode-p 'js2-mode)
+    ;; use `js2-mode' parser, much smarter and works in any scope
+    (js2hl-rename-thing-at-point))
+   (t
+    ;; simple string search/replace in function scope
+    (evilmr-replace-in-defun))))
 
 (my-comma-leader-def
   "," 'evilnc-comment-operator
@@ -442,7 +521,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "m" 'evil-set-marker
   "em" 'my-erase-visible-buffer
   "eb" 'eval-buffer
-  "sd" 'sudo-edit
   "sc" 'scratch
   "ee" 'eval-expression
   "aa" 'copy-to-x-clipboard ; used frequently
@@ -457,9 +535,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
-  "xd" 'dired
   "xo" 'ace-window
-  "ff" 'toggle-full-window ;; I use WIN+F in i3
+  "ff" 'my-toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
   "tt" 'find-file-in-current-directory
   "jj" 'find-file-in-project-at-point
@@ -483,7 +560,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "wk" 'evil-window-up
   "wj" 'evil-window-down
   ;; }}
-  "rv" 'evilmr-replace-in-defun
+  "rv" 'my-rename-thing-at-point
   "rb" 'evilmr-replace-in-buffer
   "ts" 'evilmr-tag-selected-region ;; recommended
   "cby" 'cb-switch-between-controller-and-view
@@ -495,6 +572,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "gf" 'counsel-git ; find file
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
+  "gt" 'my-evil-goto-definition ; "gt" is occupied by evil
   "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
   "rjs" 'run-js
@@ -505,14 +583,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "ii" 'my-imenu-or-list-tag-in-current-file
-  "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
-  "tg" 'dumb-jump-go
-  "tb" 'dumb-jump-back
   "tm" 'my-git-timemachine
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
-  "oo" 'compile
+  "op" 'compile
   "c$" 'org-archive-subtree ; `C-c $'
   ;; org-do-demote/org-do-premote support selected region
   "c<" 'org-do-promote ; `C-c C-<'
@@ -524,40 +599,38 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "qq" 'my-multi-purpose-grep
   "dd" 'counsel-etags-grep-current-directory
   "rr" 'my-counsel-recentf
-  "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
-  "rd" 'counsel-recent-directory
   "da" 'diff-region-tag-selected-as-a
   "db" 'diff-region-compare-with-b
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
   "jp" 'my-print-json-path
-  "xe" 'eval-last-sexp
+  ;; {{ @see http://ergoemacs.org/emacs/emacs_pinky_2020.html
+  ;; `keyfreq-show' proved sub-window operations happen most.
   "x0" 'delete-window
   "x1" 'delete-other-windows
-  "x2" 'my-split-window-vertically
-  "x3" 'my-split-window-horizontally
+  "x2" 'split-window-vertically
+  "x3" 'split-window-horizontally
+  "xq" 'delete-window
+  "xa" 'split-window-vertically
+  "xd" 'split-window-horizontally
+  "s0" 'delete-window
   "s1" 'delete-other-windows
-  "s2" 'fip-split-window-vertically
-  "s3" 'ffip-split-window-horizontally
-  "rw" 'rotate-windows
-  "ru" 'undo-tree-save-state-to-register ; C-x r u
-  "rU" 'undo-tree-restore-state-from-register ; C-x r U
+  "s2" 'split-window-vertically
+  "s3" 'split-window-horizontally
+  "sq" 'delete-window
+  "sa" 'split-window-vertically
+  "sd" 'split-window-horizontally
+  "oo" 'delete-other-windows
+  ;; }}
+  "xr" 'rotate-windows
   "xt" 'toggle-two-split-window
   "uu" 'winner-undo
   "ur" 'winner-redo
-  "to" 'toggle-web-js-offset
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
   "ss" 'my-swiper
-  "hd" 'describe-function
-  "hf" 'find-function
-  "hk" 'describe-key
-  "hv" 'describe-variable
-  "gt" 'counsel-gtags-dwim ; jump from reference to definition or vice versa
-  "gr" 'counsel-gtags-find-symbol
-  "gu" 'counsel-gtags-update-tags
   "fb" 'flyspell-buffer
   "fe" 'flyspell-goto-next-error
   "fa" 'flyspell-auto-correct-word
@@ -571,7 +644,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
           (interactive)
           (my-ensure 'org)
           (counsel-org-agenda-headlines))
-  "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "wrn" 'httpd-restart-now
@@ -633,16 +705,15 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
-  "ee" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
   "sc" 'shell-command
-  "ll" 'my-wg-switch-workgroup ; load windows layout
-  "kk" 'scroll-other-window
-  "jj" 'scroll-other-window-up
+  "ll" 'wg-open-workgroup ; load windows layout
+
+  "jj" 'scroll-other-window
+  "kk" 'scroll-other-window-up
   "hh" 'random-healthy-color-theme
   "yy" 'hydra-launcher/body
   "ii" 'my-toggle-indentation
   "g" 'hydra-git/body
-  "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
   "uu" 'gud-run
@@ -662,49 +733,50 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :keymaps 'js2-mode-map)
 
 (my-javascript-leader-def
- "de" 'js2-display-error-list
- "nn" 'js2-next-error
- "te" 'js2-mode-toggle-element
- "tf" 'js2-mode-toggle-hide-functions
- "jeo" 'js2r-expand-object
- "jco" 'js2r-contract-object
- "jeu" 'js2r-expand-function
- "jcu" 'js2r-contract-function
- "jea" 'js2r-expand-array
- "jca" 'js2r-contract-array
- "jwi" 'js2r-wrap-buffer-in-iife
- "jig" 'js2r-inject-global-in-iife
- "jev" 'js2r-extract-var
- "jiv" 'js2r-inline-var
- "jrv" 'js2r-rename-var
- "jvt" 'js2r-var-to-this
- "jag" 'js2r-add-to-globals-annotation
- "jsv" 'js2r-split-var-declaration
- "jss" 'js2r-split-string
- "jef" 'js2r-extract-function
- "jem" 'js2r-extract-method
- "jip" 'js2r-introduce-parameter
- "jlp" 'js2r-localize-parameter
- "jtf" 'js2r-toggle-function-expression-and-declaration
- "jao" 'js2r-arguments-to-object
- "juw" 'js2r-unwrap
- "jwl" 'js2r-wrap-in-for-loop
- "j3i" 'js2r-ternary-to-if
- "jlt" 'js2r-log-this
- "jsl" 'js2r-forward-slurp
- "jba" 'js2r-forward-barf
- "jk" 'js2r-kill)
+  "de" 'js2-display-error-list
+  "nn" 'js2-next-error
+  "te" 'js2-mode-toggle-element
+  "tf" 'js2-mode-toggle-hide-functions
+  "jeo" 'js2r-expand-object
+  "jco" 'js2r-contract-object
+  "jeu" 'js2r-expand-function
+  "jcu" 'js2r-contract-function
+  "jea" 'js2r-expand-array
+  "jca" 'js2r-contract-array
+  "jwi" 'js2r-wrap-buffer-in-iife
+  "jig" 'js2r-inject-global-in-iife
+  "jev" 'js2r-extract-var
+  "jiv" 'js2r-inline-var
+  "jrv" 'js2r-rename-var
+  "jvt" 'js2r-var-to-this
+  "jag" 'js2r-add-to-globals-annotation
+  "jsv" 'js2r-split-var-declaration
+  "jss" 'js2r-split-string
+  "jef" 'js2r-extract-function
+  "jem" 'js2r-extract-method
+  "jip" 'js2r-introduce-parameter
+  "jlp" 'js2r-localize-parameter
+  "jtf" 'js2r-toggle-function-expression-and-declaration
+  "jao" 'js2r-arguments-to-object
+  "juw" 'js2r-unwrap
+  "jwl" 'js2r-wrap-in-for-loop
+  "j3i" 'js2r-ternary-to-if
+  "jlt" 'js2r-log-this
+  "jsl" 'js2r-forward-slurp
+  "jba" 'js2r-forward-barf
+  "jk" 'js2r-kill)
 ;; }}
 
-;; Press `dd' to delete lines in `wgrep-mode' in evil directly
-(defadvice evil-delete (around evil-delete-hack activate)
+(defun my-evil-delete-hack (orig-func &rest args)
+  "Press `dd' to delete lines in `wgrep-mode' in evil directly."
   ;; make buffer writable
   (if (and (boundp 'wgrep-prepared) wgrep-prepared)
       (wgrep-toggle-readonly-area))
-  ad-do-it
+  (apply orig-func args)
   ;; make buffer read-only
   (if (and (boundp 'wgrep-prepared) wgrep-prepared)
       (wgrep-toggle-readonly-area)))
+(advice-add 'evil-delete :around #'my-evil-delete-hack)
 
 ;; {{ Use `;` as leader key, for searching something
 (general-create-definer my-semicolon-leader-def
@@ -712,69 +784,68 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :states '(normal visual))
 
 (my-semicolon-leader-def
- ;; Search character(s) at the beginning of word
- ;; See https://github.com/abo-abo/avy/issues/70
- ;; You can change the avy font-face in ~/.custom.el:
- ;;  (with-eval-after-load 'avy
- ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
- ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
- ";" 'ace-pinyin-jump-char-2
- "w" 'avy-goto-word-or-subword-1
- "a" 'avy-goto-char-timer
- "db" 'sdcv-search-input ; details
- "dt" 'sdcv-search-input+ ; summary
- "dd" 'my-lookup-dict-org
- "mm" 'lookup-doc-in-man
- "gg" 'w3m-google-search
- "gd" 'w3m-search-financial-dictionary
- "ga" 'w3m-java-search
- "gh" 'w3mext-hacker-search ; code search in all engines with firefox
- "gq" 'w3m-stackoverflow-search)
+  ;; Search character(s) at the beginning of word
+  ;; See https://github.com/abo-abo/avy/issues/70
+  ;; You can change the avy font-face in ~/.custom.el:
+  ;;  (with-eval-after-load 'avy
+  ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
+  ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
+  ";" 'ace-pinyin-jump-char-2
+  "w" 'avy-goto-word-or-subword-1
+  "a" 'avy-goto-char-timer
+  "db" 'sdcv-search-input ; details
+  "dt" 'sdcv-search-input+ ; summary
+  "dd" 'my-lookup-dict-org
+  "mm" 'lookup-doc-in-man
+  "gg" 'w3m-google-search
+  "gd" 'w3m-search-financial-dictionary
+  "ga" 'w3m-java-search
+  "gh" 'w3mext-hacker-search ; code search in all engines with firefox
+  "gq" 'w3m-stackoverflow-search)
 ;; }}
 
 ;; {{ remember what we searched
 ;; http://emacs.stackexchange.com/questions/24099/how-to-yank-text-to-search-command-after-in-evil-mode/
 (defvar my-search-text-history nil "List of text I searched.")
 (defun my-select-from-search-text-history ()
+  "My select the history of text searching."
   (interactive)
   (ivy-read "Search text history:" my-search-text-history
             :action (lambda (item)
                       (copy-yank-str item)
                       (message "%s => clipboard & yank ring" item))))
-(defun my-cc-isearch-string ()
-  (interactive)
-  (if (and isearch-string (> (length isearch-string) 0))
-      ;; NOT pollute clipboard who has things to paste into Emacs
-      (add-to-list 'my-search-text-history isearch-string)))
 
-(defadvice evil-search-incrementally (after evil-search-incrementally-after-hack activate)
-  (my-cc-isearch-string))
-
-(defadvice evil-search-word (after evil-search-word-after-hack activate)
-  (my-cc-isearch-string))
-
-(defadvice evil-visualstar/begin-search (after evil-visualstar/begin-search-after-hack activate)
-  (my-cc-isearch-string))
+(defun my-cc-isearch-string (&rest args)
+  "Add `isearch-string' inot history."
+  (and isearch-string
+       (> (length isearch-string) 0)
+       (push isearch-string my-search-text-history)))
+(advice-add 'evil-search-incrementally :after #'my-cc-isearch-string)
+(advice-add 'evil-search-word :after #'my-cc-isearch-string)
+(advice-add 'evil-visualstar/begin-search :after #'my-cc-isearch-string)
 ;; }}
 
-;; change mode-line color by evil state
-(let* ((default-color (cons (face-background 'mode-line)
-			    (face-foreground 'mode-line))))
-  (add-hook 'post-command-hook
-	    (lambda ()
-	      (let* ((color (cond ((minibufferp) default-color)
-				  ((evil-insert-state-p) '("#e80000" . "#ffffff"))
-				  ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
-				  ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
-				  (t default-color))))
-		(set-face-background 'mode-line (car color))
-		(set-face-foreground 'mode-line (cdr color))))))
+;; {{ change mode-line color by evil state
+(defconst my-default-color (cons (face-background 'mode-line)
+                                 (face-foreground 'mode-line)))
+(defun my-show-evil-state ()
+  "Change mode line color to notify user evil current state."
+  (let* ((color (cond ((minibufferp) my-default-color)
+                      ((evil-insert-state-p) '("#e80000" . "#ffffff"))
+                      ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
+                      ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
+                      (t my-default-color))))
+    (set-face-background 'mode-line (car color))
+    (set-face-foreground 'mode-line (cdr color))))
+(add-hook 'post-command-hook #'my-show-evil-state)
+;; }}
 
 ;; {{ evil-nerd-commenter
 (evilnc-default-hotkeys t)
 (define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
+  "Is current line html?"
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
                                                (line-end-position)))
          (re (format "^[ \t]*\\(%s\\)?[ \t]*</?[a-zA-Z]+"
@@ -819,27 +890,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-exchange-install)
 ;; }}
 
-;; {{ evil-lion
-;; After pressing `glip=` or `gl2j=` (gl is the operator, ip or 2j is text object, = separator):
-;; one = 1
-;; three = 3
-;; fifteen = 15
-;;
-;; will become:
-;; one     = 1
-;; three   = 3
-;; fifteen = 15
-;;
-;; If the align separator is / you will be prompted for a regular expression instead of a plain character.
-(evil-lion-mode)
-;; }}
-
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
-;; same keybindgs as spacemacs:
+;; same keybindings as spacemacs:
 ;;  - Start `iedit-mode' by `evil-iedit-state/iedit-mode'
 ;;  - "TAB" to toggle current occurrence
 ;;  - "n" next, "N" previous (obviously we use "p" for yank)
-;;  - "gg" the first occurence, "G" the last occurence
+;;  - "gg" the first occurrence, "G" the last occurrence
 ;;  - Please note ";;" or `avy-goto-char-timer' is also useful
 ;; }}
 
@@ -849,6 +905,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ Port of vim-textobj-syntax.
 ;; It provides evil text objects for consecutive items with same syntax highlight.
+;; press "vah" or "vih"
 (require 'evil-textobj-syntax)
 ;; }}
 
@@ -885,12 +942,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (suspend-frame))))
 
 ;; press ",xx" to expand region
-;; then press "c" to contract, "x" to expand
+;; then press "char" to contract, "x" to expand
 (with-eval-after-load 'evil
-  ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
+  ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
-  (setq expand-region-contract-fast-key "c")
+  (setq expand-region-contract-fast-key "char")
   ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
   ;; evil 1.0.8 search word instead of symbol
   (setq evil-symbol-word-search t)
@@ -905,9 +962,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
   ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
   (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
     `(with-eval-after-load (quote ,(if r r m))
-          (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-          ;; force update evil keymaps after git-timemachine-mode loaded
-          (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
+       (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+       ;; force update evil keymaps after git-timemachine-mode loaded
+       (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
 
   (adjust-major-mode-keymap-with-evil "git-timemachine")
 
