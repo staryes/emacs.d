@@ -50,35 +50,35 @@
     ;; }}
     wgrep
     ;; {{ themes in melpa unstable
-    ample-theme
-    molokai-theme
-    spacemacs-theme
-    leuven-theme
-    sublime-themes
-    tangotango-theme
-    darkburn-theme
-    ujelly-theme
-    afternoon-theme
-    organic-green-theme
-    inkpot-theme
-    flatui-theme
-    hc-zenburn-theme
-    naquadah-theme
-    seti-theme
-    spacegray-theme
-    jazz-theme
-    espresso-theme
-    phoenix-dark-pink-theme
-    tango-plus-theme
-    twilight-theme
-    minimal-theme
-    noctilux-theme
-    soothe-theme
-    heroku-theme
-    hemisu-theme
-    badger-theme
-    distinguished-theme
-    tao-theme
+    ;; ample-theme
+    ;; molokai-theme
+    ;; spacemacs-theme
+    ;; leuven-theme
+    ;; sublime-themes
+    ;; tangotango-theme
+    ;; darkburn-theme
+    ;; ujelly-theme
+    ;; afternoon-theme
+    ;; organic-green-theme
+    ;; inkpot-theme
+    ;; flatui-theme
+    ;; hc-zenburn-theme
+    ;; naquadah-theme
+    ;; seti-theme
+    ;; spacegray-theme
+    ;; jazz-theme
+    ;; espresso-theme
+    ;; phoenix-dark-pink-theme
+    ;; tango-plus-theme
+    ;; twilight-theme
+    ;; minimal-theme
+    ;; noctilux-theme
+    ;; soothe-theme
+    ;; heroku-theme
+    ;; hemisu-theme
+    ;; badger-theme
+    ;; distinguished-theme
+    ;; tao-theme
     ;; }}
     slime
     groovy-mode
@@ -112,7 +112,8 @@
     zoutline
     company-c-headers
     company-statistics
-    ox
+    arduino-mode
+    matlab-mode
     )
   "Packages to install from melpa-unstable.")
 
