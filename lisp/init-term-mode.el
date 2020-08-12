@@ -45,7 +45,6 @@ EVENT is ignored."
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
-
 (defun eshell-mode-hook-setup ()
   "Set up `eshell-mode'."
   (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
@@ -56,7 +55,6 @@ EVENT is ignored."
 (advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
 ;; always use bash
-<<<<<<< HEAD
 
 ;; try to use zsh
 (defvar my-term-program "/bin/zsh")
@@ -64,9 +62,8 @@ EVENT is ignored."
 ;;   (interactive (list my-term-program))
 ;;   )
 ;; (ad-activate 'ansi-term)
-=======
-(defvar my-term-program "/bin/bash")
->>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
+
+:;(defvar my-term-program "/bin/bash")
 
 ;; utf8
 (defun my-term-use-utf8 ()
@@ -122,6 +119,21 @@ EVENT is ignored."
                ("M-." . term-send-raw-meta)))
     (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
     (add-to-list 'term-bind-key-alist p)))
+
+;; {{ comint-mode
+(with-eval-after-load 'comint
+  ;; Don't echo passwords when communicating with interactive programs:
+  ;; Github prompt is like "Password for 'https://user@github.com/':"
+  (setq comint-password-prompt-regexp
+        (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
+  (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt))
+(defun comint-mode-hook-setup ()
+  ;; look up shell command history
+  (local-set-key (kbd "M-n") 'counsel-shell-history)
+  ;; Don't show trailing whitespace in REPL.
+  (local-set-key (kbd "M-;") 'comment-dwim))
+(add-hook 'comint-mode-hook 'comint-mode-hook-setup)
+
 ;; }}
 
 (provide 'init-term-mode)
