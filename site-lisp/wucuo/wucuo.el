@@ -30,15 +30,9 @@
 ;; Please install either aspell or hunspell and their dictionaries.
 ;;
 ;; 2. Usage
-<<<<<<< HEAD
-;; Run `wucuo-start' to setup and start `flyspell-mode'.
-;; It spell check camel case words in code.
-;; Or just add "(wucuo-start)" into "~/.emacs".
-=======
 ;; Insert below code into ".emacs",
 ;;   (add-hook 'prog-mode-hook 'wucuo-start)
 ;;   (add-hook 'text-mode-hook 'wucuo-start)
->>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
 ;;
 ;; The spell checking starts when current buffer is saved.
 ;;

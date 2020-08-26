@@ -7,27 +7,19 @@
 (setq-default mode-line-format
   (list
     ;; the buffer name; the file name as a tool tip
-<<<<<<< HEAD
-    '(:eval (propertize "%b " 'face nil
-        'help-echo (buffer-file-name)))
-    
-=======
+
     '(:eval (propertize "%b " 'face nil 'help-echo (buffer-file-name)))
 
->>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
     ;; line and column
     "(" ;; '%02' to set to 2 chars at least; prevents flickering
     "%02l" "," "%01c"
     ") "
 
-<<<<<<< HEAD
     ;; nyan mode
     '(:eval (list (nyan-create)))
     
     ;; the current major mode for the buffer.
-=======
     ;; @see https://www.gnu.org/software/emacs/manual/html_node/emacs/Help-Echo.html
->>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
     "["
     ;; the current major mode for the buffer.
     '(:eval (propertize "%m" 'face nil 'help-echo buffer-file-coding-system))

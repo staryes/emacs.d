@@ -161,12 +161,7 @@ This function can be re-used by other major modes after compilation."
 
     ;; {{ spell check camel-case word
     (my-ensure 'wucuo)
-<<<<<<< HEAD
-    (wucuo-start t)
-
-=======
     (wucuo-start)
->>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
     ;; }}
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html

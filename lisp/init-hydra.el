@@ -735,7 +735,7 @@ _w_ where is something defined
   ("ycr" my-yas-reload-all)
   ("wf" popup-which-function)
   )
-(global-set-key (kbd "C-;") 'hydra-evil-semicolon/body)
+(global-set-key (kbd "C-c C-;") 'hydra-evil-semicolon/body)
 
 (provide 'init-hydra)
 ;;; init-hydra.el ends here

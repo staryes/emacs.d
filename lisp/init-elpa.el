@@ -114,7 +114,7 @@
     )
   "Packages to install from melpa-unstable.")
 
-(defvar melpa-stable-banned-packages nil
+(defvar melpa-stable-banned-packages t
   "Banned packages from melpa-stable.")
 
 ;; I don't use any packages from GNU ELPA because I want to minimize
@@ -196,8 +196,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 
     (when add-to-p
       ;; The package is visible through package manager
-      (apply orig-func args))))
-(advice-add 'package--add-to-archive-contents :around #'my-package--add-to-archive-contents-hack)
+      (apply orig-func args)))
+  (advice-add 'package--add-to-archive-contents :around #'my-package--add-to-archive-contents-hack))
 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
