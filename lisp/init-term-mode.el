@@ -71,54 +71,28 @@ EVENT is ignored."
 (add-hook 'term-exec-hook 'my-term-use-utf8)
 ;; }}
 
-;; {{ multi-term
-(defun last-term-buffer (l)
-  "Return most recently used term buffer."
-  (when l
-    (if (eq 'term-mode (with-current-buffer (car l) major-mode))
-        (car l) (last-term-buffer (cdr l)))))
-
-(defun get-term ()
-  "Switch to the term buffer last used, or create a new one if
-    none exists, or if the current buffer is already a term."
-  (interactive)
-  (let* ((b (last-term-buffer (buffer-list))))
-    (if (or (not b) (eq 'term-mode major-mode))
-        (multi-term)
-      (switch-to-buffer b))))
-
-(defun term-send-kill-whole-line ()
-  "Kill whole line in term mode."
-  (interactive)
-  (term-send-raw-string "\C-a")
-  (term-send-raw-string "\C-k"))
-
-(defun term-send-kill-line ()
-  "Kill line in term mode."
-  (interactive)
-  (term-send-raw-string "\C-k"))
-
-(setq multi-term-program my-term-program)
-;; check `term-bind-key-alist' for key bindings
-(with-eval-after-load 'multi-term
-  (dolist (p '(("C-p" . term-send-up)
-               ("C-n" . term-send-down)
-               ("C-s" . swiper)
-               ("C-r" . term-send-reverse-search-history)
-               ("C-m" . term-send-raw)
-               ("C-k" . term-send-kill-whole-line)
-               ;("C-y" . yank)
-               ("C-y" . term-paste)
-               ("C-_" . term-send-raw)
-               ("M-f" . term-send-forward-word)
-               ("M-b" . term-send-backward-word)
-               ("M-K" . term-send-kill-line)
-               ("M-p" . previous-line)
-               ("M-n" . next-line)
-               ("M-y" . yank-pop)
-               ("M-." . term-send-raw-meta)))
-    (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
-    (add-to-list 'term-bind-key-alist p)))
+; {{ hack counsel-browser-history
+(defvar my-comint-full-input nil)
+(defun my-counsel-shell-history-hack (orig-func &rest args)
+  (setq my-comint-full-input (my-comint-current-input))
+  (my-comint-kill-current-input)
+  (apply orig-func args)
+  (setq my-comint-full-input nil))
+(advice-add 'counsel-shell-history :around #'my-counsel-shell-history-hack)
+(defun my-ivy-history-contents-hack (orig-func &rest args)
+  (let* ((rlt (apply orig-func args))
+         (input my-comint-full-input))
+    (when (and input (not (string= input "")))
+      ;; filter shell history with current input
+      (setq rlt
+            (delq nil (mapcar
+                       `(lambda (s)
+                          (if (string-match (regexp-quote ,input) s) s))
+                       rlt))))
+    (when (and rlt (> (length rlt) 0)))
+    rlt))
+(advice-add 'ivy-history-contents :around #'my-ivy-history-contents-hack)
+;; }}
 
 ;; {{ comint-mode
 (with-eval-after-load 'comint

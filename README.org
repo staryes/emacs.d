@@ -1,10 +1,13 @@
 * A fast and robust Emacs setup
+
+[[https://travis-ci.org/redguardtoo/emacs.d][https://travis-ci.org/redguardtoo/emacs.d.svg?branch=master]]
+
 - Fast. Only *one second* to start up
 - Robust. Never crash after package upgrade. Packages could be installed without network
 - Support Windows. You can find&grep files on Windows with minimum setup
 - Tested with Emacs 25.3, 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
+Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
 
 [[file:demo.png]]
 
@@ -24,6 +27,7 @@
   - [[#get-better-performance][Get better performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#spell-check-camel-case-code][Spell check camel case code]]
   - [[#locked-packages][Locked packages]]
   - [[#how-to-install-new-packages][How to install new packages?]]
   - [[#git-blame-current-line][Git blame current line]]
@@ -86,10 +90,12 @@
 * Installation
 Most users should follow the section "Install in normal way".
 
+Please remove =~/.emacs= first. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
+
 You need the section "Install stable version" *if and only if*,
 - You don't have network access
 - You have never used any command line program
-Please remove =~/.emacs=. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]] first.
+
 ** Install in normal way
 There are two ways to install this setup (I recommend the first way):
 
@@ -155,7 +161,17 @@ If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell
 
 You can set =my-force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
 
-This setup use [[https://github.com/redguardtoo/wucuo][wucuo]] to spell check camel case words. It supports both aspell and hunspell.  Run =M-x wucuo-start= and =M-x flyspell-buffer= to check camel case words.
+[[https://github.com/redguardtoo/wucuo][Wucuo]] is used to spell check camel case words. It supports both aspell and hunspell.
+
+Please check =wucuo-start= in =~/.emacs.d/lisp= to see how it's used.
+
+You can comment out the line containing =wucuo-start= to disable the spell checking in Emacs.
+
+Wucuo is based on Flyspell and it's alternative of =flyspell-mode=.
+
+Spelling check just works out of box with wucuo. You don't need any extra configuration. For example, there is no reason you need enable =flyspell-mode= at all.
+
+Some people like to run =M-x flyspell-buffer= to manually check current buffer.
 
 Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. Its content is like:
 #+begin_src conf
@@ -283,28 +299,28 @@ This configuration is already optimized for low specification machines on Window
 
 But you could still squeeze more performance by decreasing the frequency of spell checking and programming syntax check.
 
-The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is light weight alternative of =flyspell-mode=.
+The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is lightweight alternative of =flyspell-mode=.
 
-The programming syntax check is  done by [[https://github.com/redguardtoo/lazyflymake][lazyflymake]] which is light weight alternative of =flymake-mode=.
+The programming syntax check is done by [[https://github.com/redguardtoo/lazyflymake][lazyflymake]] which is alternative of =flymake-mode=.
 
 Insert below code to =~/.custom.el= to increase the interval of check,
 #+begin_src elisp
 (with-eval-after-load 'wucuo
-  ;; 300 seconds
-  (setq wucuo-update-interval 300))
+;; 4 second
+(setq wucuo-update-interval 4))
 (with-eval-after-load 'lazyflymake
-  ;; 300 seconds
-  (setq lazyflymake-update-interval 300))
+;; 2 seconds
+(setq lazyflymake-update-interval 3))
 #+end_src
 *** Why opening file is slow
 Insert below code into =~/.custom.el=, replace "/home/user1/your-file-path" with the file you want to open,
 #+begin_src elisp
 (defun profile-open-file ()
-  (interactive)
-  (profiler-start 'cpu)
-  (find-file "/home/user1/your-file-path")
-  (profiler-report)
-  (profiler-stop))
+(interactive)
+(profiler-start 'cpu)
+(find-file "/home/user1/your-file-path")
+(profiler-report)
+(profiler-stop))
 #+end_src
 
 Run =M-x profile-open-file= and read the report.
@@ -321,6 +337,12 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Spell check camel case code
+This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode=. I strongly recommend you reading the section "aspell or hunspell" at least once.
+
+Wucuo is fast, reliable, and powerful. It's better than any spell checking solutions of other text and IDE (VSCode, Sublime Text 3, IntelliJ IDEA ...).
+
+Please don't disable it simply because it's a new package.
 ** Locked packages
 Some packages are so important to my workflow that they are locked.
 
@@ -378,10 +400,10 @@ So you can use any functions defined in my emacs configuration.
 Here is a sample to override keybindings defined in =lisp/init-evil.el=,
 #+begin_src elisp
 (with-eval-after-load 'evil
-  (my-space-leader-def
-    "ss" 'pwd
-    "ll" 'pwd
-    "pp" 'pwd))
+(my-space-leader-def
+"ss" 'pwd
+"ll" 'pwd
+"pp" 'pwd))
 #+end_src
 ** Code navigation and auto-completion
 It's usable out of box if Ctags is installed
@@ -454,8 +476,8 @@ I use modified version of =git-gutter= for now until my pull request is merged i
 You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS (Perforce, for example),
 #+begin_src elisp
 (setq git-gutter:exp-to-create-diff
-      (shell-command-to-string (format "p4 diff -du -db %s"
-                                       (file-relative-name buffer-file-name))))
+(shell-command-to-string (format "p4 diff -du -db %s"
+(file-relative-name buffer-file-name))))
 #+end_src
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
@@ -583,14 +605,14 @@ Please run =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz |
 The default pinyin scheme is =quanpin= but you can insert below code into =~/.custom.el= to switch to a different pinyin scheme,
 #+begin_src elisp
 (with-eval-after-load 'pyim
-  (setq pyim-default-scheme 'xiaohe-shuangpin))
+(setq pyim-default-scheme 'xiaohe-shuangpin))
 #+end_src
 *** Use Wubi
 Dictionary for wubi is already installed. Please insert below code into =~/.custom.el= to enable wubi dictionary and use wubi scheme,
 #+begin_src elisp
 (setq my-pyim-enable-wubi-dict t)
 (with-eval-after-load 'pyim
-  (setq pyim-default-scheme 'wubi))
+(setq pyim-default-scheme 'wubi))
 #+end_src
 ** Install multiple versions of Emacs
 Run below commands in shell:
@@ -638,34 +660,34 @@ You could insert below code into =~/.custom.el=,
 #+begin_src elisp
 
 (with-eval-after-load 'lsp-mode
-  ;; enable log only for debug
-  (setq lsp-log-io nil)
-  ;; use `evil-matchit' instead
-  (setq lsp-enable-folding nil)
-  ;; no real time syntax check
-  (setq lsp-diagnostic-package :none)
-  ;; handle yasnippet by myself
-  (setq lsp-enable-snippet nil)
-  ;; use `company-ctags' only.
-  ;; Please note `company-lsp' is automatically enabled if it's installed
-  (setq lsp-enable-completion-at-point nil)
-  ;; turn off for better performance
-  (setq lsp-enable-symbol-highlighting nil)
-  ;; use find-fine-in-project instead
-  (setq lsp-enable-links nil)
-  ;; auto restart lsp
-  (setq lsp-restart 'auto-restart)
-  ;; don't watch 3rd party javascript libraries
-  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
-  ;; don't ping LSP lanaguage server too frequently
-  (defvar lsp-on-touch-time 0)
-  (defun my-lsp-on-change-hack (orig-fun &rest args)
-    ;; do NOT run `lsp-on-change' too frequently
-    (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 120) ;; 2 mins
-      (setq lsp-on-touch-time (float-time (current-time)))
-      (apply orig-fun args)))
-  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
+;; enable log only for debug
+(setq lsp-log-io nil)
+;; use `evil-matchit' instead
+(setq lsp-enable-folding nil)
+;; no real time syntax check
+(setq lsp-diagnostic-package :none)
+;; handle yasnippet by myself
+(setq lsp-enable-snippet nil)
+;; use `company-ctags' only.
+;; Please note `company-lsp' is automatically enabled if it's installed
+(setq lsp-enable-completion-at-point nil)
+;; turn off for better performance
+(setq lsp-enable-symbol-highlighting nil)
+;; use find-fine-in-project instead
+(setq lsp-enable-links nil)
+;; auto restart lsp
+(setq lsp-restart 'auto-restart)
+;; don't watch 3rd party javascript libraries
+(push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
+;; don't ping LSP language server too frequently
+(defvar lsp-on-touch-time 0)
+(defun my-lsp-on-change-hack (orig-fun &rest args)
+;; do NOT run `lsp-on-change' too frequently
+(when (> (- (float-time (current-time))
+lsp-on-touch-time) 120) ;; 2 mins
+(setq lsp-on-touch-time (float-time (current-time)))
+(apply orig-fun args)))
+(advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 #+end_src
 
 Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
