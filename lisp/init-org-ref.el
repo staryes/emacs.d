@@ -5,9 +5,8 @@
 ;;       )
 
 (setq ;bibtex-completion-notes-path org_notes
- bibtex-completion-bibliography  '(;"~/gitLocal/pensieve/SRL_paper_club.bib"
-                                   "~/gitLocal/pensieve/myLibrary.bib"
-                                  ;"~/gitlocal/pensieve/slinki_library.bib"
+ bibtex-completion-bibliography  '(;"~/pensieve/SRL_paper_club.bib"
+                                   "~/pensieve/myLibrary.bib"
                                    )
  bibtex-completion-pdf-field "file"
  )
