@@ -13,7 +13,6 @@
  'auto-mode-alist
  '("\\.m$" . matlab-mode))
 (setq matlab-indent-function nil)
-                                        ;(setq matlab-shell-command "matlab")
 
 ;; CLI matlab from the shell:
 ;; /Applications/MATLAB_R2016a.app/bin/matlab -nodesktop

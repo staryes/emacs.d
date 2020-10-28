@@ -1,5 +1,6 @@
 #name : figure
 # --
-#+attr_latex: width=$1\textwidth
+#+attr_latex: :width=$1\textwidth
+#+attr_org: :width 400
 `(org-insert-link '(4))`
 $0

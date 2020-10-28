@@ -17,7 +17,10 @@
 
   ;; Show the clocked-in task - if any - in the header line
   (defun sanityinc/show-org-clock-in-header-line ()
-    (setq-default header-line-format '((" " org-mode-line-string " "))))
+    ;(setq-default header-line-format '((" " org-mode-line-string " ")))
+    ;; 将header-line-format设置为mode-line-misc-info的值，可以将计时器加入
+    (setq-default header-line-format 'mode-line-misc-info)
+    )
 
   (defun sanityinc/hide-org-clock-from-header-line ()
     (setq-default header-line-format nil))
@@ -208,6 +211,84 @@ skip user's own code in `org-mode-hook'."
  '((emacs-lisp . t)
    ;(julia . t)
    (python . t)
-   (jupyter . t)))
+   (jupyter . t)
+   (matlab . t)
+   (octave . t)))
+
+;;work with image setting
+;;from  https://llazarek.com/2018/10/images-in-org-mode.html
+(defvar ll/org/insert-screenshot/redisplay-images t
+  "Redisplay images after inserting a screenshot with
+`ll/org/insert-screenshot'?")
+
+(defun ll/org/insert-screenshot (&optional arg)
+  "Capture a screenshot and insert a link to it in the current
+buffer. If `ll/org/insert-screenshot/redisplay-images' is non-nil,
+redisplay images in the current buffer.
+
+By default saves images to ./resources/screen_%Y%m%d_%H%M%S.png,
+creating the resources directory if necessary.
+
+With a prefix arg (C-u) prompt for a filename instead of using the default.
+
+Depends upon `import` from ImageMagick."
+  (interactive)
+  (unless (or arg
+              (file-directory-p "./resources"))
+    (make-directory "resources"))
+  (let* ((default-dest
+           (format-time-string "./resources/screen_%Y%m%d_%H%M%S.png"))
+         (dest (if arg
+                   (helm-read-string "Save to: " default-dest)
+                 default-dest)))
+    (start-process "import" nil "/usr/bin/import" dest)
+    (read-char "Taking screenshot... Press any key when done.")
+    (org-insert-link t (concat "file:" dest) "")
+    (when ll/org/insert-screenshot/redisplay-images
+      (org-remove-inline-images)
+      (org-display-inline-images))))
+
+
+(defvar ll/org/edit-image/redisplay-images t
+  "Redisplay images after editing an image with `ll/org/edit-image'?")
+
+(defun ll/org/edit-image (&optional arg)
+  "Edit the image linked at point. If
+`ll/org/insert-screenshot/redisplay-images' is non-nil, redisplay
+images in the current buffer."
+  (interactive)
+  (let ((img (ll/org/link-file-path-at-point)))
+    (start-process "gimp" nil "/usr/bin/gimp" img)
+    (read-char "Editing image... Press any key when done.")
+    (when ll/org/edit-image/redisplay-images
+      (org-remove-inline-images)
+      (org-display-inline-images))))
+
+(defun ll/org/resize-image-at-point (&optional arg)
+  "Resize the image linked at point. If
+`ll/org/insert-screenshot/redisplay-images' is non-nil, redisplay
+images in the current buffer."
+  (interactive)
+  (let ((img (ll/org/link-file-path-at-point))
+        (percent (read-number "Resize to what percentage of current size? ")))
+    (start-process "mogrify" nil "/usr/bin/mogrify"
+                   "-resize"
+                   (format "%s%%" percent)
+                   img)
+    (when ll/org/edit-image/redisplay-images
+      (org-remove-inline-images)
+      (org-display-inline-images))))
+
+(defun ll/org/link-file-path-at-point ()
+  "Get the path of the file referred to by the link at point."
+  (let* ((org-element (org-element-context))
+         (is-subscript-p (equal (org-element-type org-element) 'subscript))
+         (is-link-p (equal (org-element-type org-element) 'link))
+         (is-file-p (equal (org-element-property :type org-element) "file")))
+    (when is-subscript-p
+      (user-error "Org thinks you're in a subscript. Move the point and try again."))
+    (unless (and is-link-p is-file-p)
+      (user-error "Not on file link"))
+    (expand-file-name (org-element-property :path org-element))))
 
 (provide 'init-org)

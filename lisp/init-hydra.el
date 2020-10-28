@@ -1,3 +1,4 @@
+
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; @see https://github.com/abo-abo/hydra
@@ -16,7 +17,7 @@
 [_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_st_] Pomodoro stop
 [_e_] Erase buffer        [_E_] Typewriter on   [_sr_] Pomodoro resume
 [_r_] Erase this buffer   [_V_] Old typewriter  [_sp_] Pomodoro pause
-[_f_] Recent file
+[_f_] Recent file                             [_op_] Org Pomodoro
 [_d_] Recent directory
 [_bh_] Bash history
 [_hr_] Dired CMD history
@@ -24,6 +25,7 @@
 [_ii_] Imenu
 [_q_] Quit
 "
+
   ("hr" my-dired-redo-from-commands-history)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
@@ -44,6 +46,7 @@
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
+  ("op" org-pomodoro)
   ("R" emms-random)
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
@@ -342,7 +345,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
   ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
-(global-set-key (kbd "C-c C-h") 'hydra-toggle/body)
+(global-set-key (kbd "C-c t") 'hydra-toggle/body)
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management

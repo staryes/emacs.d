@@ -54,7 +54,6 @@ EVENT is ignored."
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
 (advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
-
 (when *is-a-mac*
   ;; try to use zsh
   (defvar my-term-program "/bin/zsh")
@@ -119,5 +118,11 @@ EVENT is ignored."
 (add-hook 'comint-mode-hook 'comint-mode-hook-setup)
 
 ;; }}
+
+
+(defun eshell-new()
+  "Open a new instance of eshell."
+  (interactive)
+  (eshell 'N))
 
 (provide 'init-term-mode)

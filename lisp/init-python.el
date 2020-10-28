@@ -7,7 +7,8 @@
               (not buffer-file-name)
               ;; embed python code in org file
               (string= (file-name-extension buffer-file-name) "org"))
-    (elpy-enable))
+    )
+  					(elpy-enable)
 
        ;; Use IPython for REPL
        (setq elpy-shell-echo-output nil
