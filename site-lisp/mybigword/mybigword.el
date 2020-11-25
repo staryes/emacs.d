@@ -4,7 +4,11 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
+<<<<<<< HEAD
 ;; Version: 0.1.1
+=======
+;; Version: 0.1.0
+>>>>>>> 82424e90... upgrade mybigword
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -554,11 +558,11 @@ If USER-INPUT-P is t, user need input the word."
         (setq word (thing-at-point 'word)))))
     word))
 
-(defun mybigword-mp3-path (file)
-  "Get mp3 file with similar name to FILE."
-  (and file
-       (concat (file-name-directory file)
-               (file-name-base file)
+(defun mybigword-mp3-path (video-file)
+  "Get mp3 file with similar name to VIDEO-FILE."
+  (and video-file
+       (concat (file-name-directory video-file)
+               (file-name-base video-file)
                ".mp3")))
 
 ;;;###autoload
@@ -569,6 +573,7 @@ Its file name should be similar to the subtitle's file name.
 If video file is missing, the mp3 with similar name is played.
 The word is either the word at point, or selected string or string from input."
   (interactive)
+<<<<<<< HEAD
   (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t))))
     (when word
       (let* ((info (funcall mybigword-default-media-info-function word))
@@ -582,6 +587,21 @@ The word is either the word at point, or selected string or string from input."
          ;; try to play audio
          ((and audio (file-exists-p audio))
           (mybigword-run-mplayer (plist-get info :start-time) audio t)))))))
+=======
+  (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t)))
+         info)
+    (when (and word
+               (setq info (funcall mybigword-default-video-info-function word)))
+      (let* ((file (plist-get info :video-path)))
+        (cond
+         ;; try to play video first
+         ((and file (file-exists-p file))
+          (mybigword-run-mplayer (plist-get info :start-time) file))
+
+         ;; try to play mp3 next
+         ((and (setq file (mybigword-mp3-path file)) (file-exists-p file))
+          (mybigword-run-mplayer (plist-get info :start-time) file t)))))))
+>>>>>>> 82424e90... upgrade mybigword
 
 (defun mybigword-cambridge-mp3-url (word)
   "Get URL to download mp3 of WORD."
