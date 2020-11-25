@@ -67,14 +67,23 @@ EVENT is ignored."
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
 (advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
-;; always use bash
+(when *is-a-mac*
+  ;; try to use zsh
+  (defvar my-term-program "/bin/zsh")
+  ;; (defadvice ansi-term
+  ;;     (interactive (list my-term-program))
+  ;;   )
+  ;; (ad-activate 'ansi-term)
+  )
 
-;; try to use zsh
-(defvar my-term-program "/bin/zsh")
-;; (defadvice ansi-term (before force-bash)
-;;   (interactive (list my-term-program))
-;;   )
-;; (ad-activate 'ansi-term)
+;; always use bash
+(when *linux*
+  (defvar my-term-program "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-program))
+  )
+  (ad-activate 'ansi-term)
+)
 
 :;(defvar my-term-program "/bin/bash")
 
@@ -122,5 +131,11 @@ EVENT is ignored."
 (add-hook 'comint-mode-hook 'comint-mode-hook-setup)
 
 ;; }}
+
+
+(defun eshell-new()
+  "Open a new instance of eshell."
+  (interactive)
+  (eshell 'N))
 
 (provide 'init-term-mode)

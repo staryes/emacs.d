@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: jupyter-python
+# key: jupyter
+# --
+#+begin_src jupyter-python :session ${1:py} :result ${2:output} :exports ${3:both}
+$0
+#+end_src

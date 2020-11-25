@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: matplotlib
+# key: plt_
+# --
+%matplotlib inline
+
+import matplotlib.pyplot as plt
+
+
+plt.plot($0)
+plt.ylabel("some numbers")
+plt.show()

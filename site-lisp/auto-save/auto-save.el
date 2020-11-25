@@ -87,6 +87,7 @@
   :group 'auto-save)
 
 (defcustom auto-save-idle 2
+
   "The idle seconds to auto save file."
   :type 'integer
   :group 'auto-save)
@@ -115,6 +116,7 @@
     "\\.ico"
     "\\.gpg"
     "archive-contents")
+
   "List of regexps and predicates for filenames excluded from the auto save list.
 When a filename matches any of the regexps or satisfies any of the
 predicates it is excluded from the auto save list.

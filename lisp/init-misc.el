@@ -164,7 +164,6 @@ This function can be re-used by other major modes after compilation."
       (my-ensure 'wucuo)
       (wucuo-start))
 
-
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
     (setq compilation-finish-functions
           '(compilation-finish-hide-buffer-on-success))
@@ -533,6 +532,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
   "The major modes where auto-save is disabled.")
 
 ;; {{ auto-save.el
+
 (defun my-check-major-mode-for-auto-save (file)
   "Check current major mode of FILE for auto save."
   (ignore file)
@@ -541,9 +541,10 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 (with-eval-after-load 'auto-save
   (push 'my-file-too-big-p auto-save-exclude)
   (push 'my-check-major-mode-for-auto-save auto-save-exclude)
-  (setq auto-save-idle 2) ; 2 seconds
+  (setq auto-save-idle 5) ; 5 seconds
   (setq auto-save-slient t))
 (my-run-with-idle-timer 4 #'auto-save-enable)
+
 ;; }}
 
 ;; {{ csv
@@ -677,12 +678,14 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 ;; {{
+
 (defun my-toggle-typewriter ()
   "Turn on/off typewriter."
   (interactive)
   (if (bound-and-true-p typewriter-mode)
       (typewriter-mode -1)
     (typewriter-mode 1)))
+
 ;; }}
 
 (with-eval-after-load 'grep
@@ -984,9 +987,10 @@ might be bad."
 ;; {{ pomodoro
 (with-eval-after-load 'pomodoro
   (setq pomodoro-play-sounds nil) ; *.wav is not installed
-  (setq pomodoro-break-time 2)
-  (setq pomodoro-long-break-time 5)
-  (setq pomodoro-work-time 15)
+
+  (setq pomodoro-break-time 5)
+  (setq pomodoro-long-break-time 15)
+  (setq pomodoro-work-time 25)
   ;; Instead of calling `pomodoro-add-to-mode-line`
   (push '(pomodoro-mode-line-string pomodoro-mode-line-string) mode-line-format))
 

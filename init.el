@@ -1,4 +1,4 @@
-;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; (advice-add #'package-initialize :after #'update-load-path)
 
 ;; Without this comment emacs25 adds (package-initialize) here
@@ -97,14 +97,18 @@
   (require-init 'init-ivy)
   (require-init 'init-windows)
   (require-init 'init-markdown t)
-  ;(require-init 'init-javascript t)
+;  (require-init 'init-javascript t)
   (require-init 'init-org t)
-  (require-init 'init-css t)
-  (require-init 'init-python t)
+                                        ;  (require-init 'init-css t)
   (require-init 'init-lisp t)
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
+  (require-init 'init-python t)
+  (when *linux*
+    ;(require-init 'init-ros)
+    ;(require-init 'init-arduino)
+    )
   (require-init 'init-linum-mode)
   (require-init 'init-git t)
   (require-init 'init-gtags t)
@@ -140,14 +144,20 @@
   (require-init 'init-writting t)
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
-  ;(require-init 'init-evil) ; init-evil dependent on init-clipboard
+  ;;(require-init 'init-evil) ; init-evil dependent on init-clipboard
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
   (require-init 'init-ediff)
-
-  (require-init 'init-fonts t)
-
+  (when (display-graphic-p)
+    (require-init 'init-fonts t))
+  (require-init 'init-nyan-mode t)
+  (require-init 'init-define-word t)
+  (when *is-a-mac*
+    (require-init 'init-matlab-mode t)
+    (require-init 'init-org-roam t)
+    (require-init 'init-org-ref t)    
+    )
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup

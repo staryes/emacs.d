@@ -66,35 +66,35 @@
     ;; }}
     wgrep
     ;; {{ themes in melpa unstable
-    ample-theme
-    molokai-theme
-    spacemacs-theme
-    leuven-theme
-    sublime-themes
-    tangotango-theme
-    darkburn-theme
-    ujelly-theme
-    afternoon-theme
-    organic-green-theme
-    inkpot-theme
-    flatui-theme
-    hc-zenburn-theme
-    naquadah-theme
-    seti-theme
-    spacegray-theme
-    jazz-theme
-    espresso-theme
-    phoenix-dark-pink-theme
-    tango-plus-theme
-    twilight-theme
-    minimal-theme
-    noctilux-theme
-    soothe-theme
-    heroku-theme
-    hemisu-theme
-    badger-theme
-    distinguished-theme
-    tao-theme
+    ;; ample-theme
+    ;; molokai-theme
+    ;; spacemacs-theme
+    ;; leuven-theme
+    ;; sublime-themes
+    ;; tangotango-theme
+    ;; darkburn-theme
+    ;; ujelly-theme
+    ;; afternoon-theme
+    ;; organic-green-theme
+    ;; inkpot-theme
+    ;; flatui-theme
+    ;; hc-zenburn-theme
+    ;; naquadah-theme
+    ;; seti-theme
+    ;; spacegray-theme
+    ;; jazz-theme
+    ;; espresso-theme
+    ;; phoenix-dark-pink-theme
+    ;; tango-plus-theme
+    ;; twilight-theme
+    ;; minimal-theme
+    ;; noctilux-theme
+    ;; soothe-theme
+    ;; heroku-theme
+    ;; hemisu-theme
+    ;; badger-theme
+    ;; distinguished-theme
+    ;; tao-theme
     ;; }}
     groovy-mode
     company ; I won't wait another 2 years for stable
@@ -125,10 +125,13 @@
     workgroups2
     zoutline
     company-c-headers
-    company-statistics)
+    company-statistics
+    arduino-mode
+    matlab-mode
+    )
   "Packages to install from melpa-unstable.")
 
-(defvar melpa-stable-banned-packages nil
+(defvar melpa-stable-banned-packages t
   "Banned packages from melpa-stable.")
 
 ;; I don't use any packages from GNU ELPA because I want to minimize
@@ -136,9 +139,10 @@
 (setq package-archives
       '(
         ;; uncomment below line if you need use GNU ELPA
-        ;; ("gnu" . "https://elpa.gnu.org/packages/")
+        ("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")
 
         ;; Use either 163 or tsinghua mirror repository when official melpa
         ;; is slow or shutdown.
@@ -201,15 +205,16 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
       (setq add-to-p
             (or (member pkg-name melpa-include-packages)
                 ;; color themes are welcomed
-                (string-match-p "-theme" (format "%s" pkg-name))))))
+                ;(string-match-p "-theme" (format "%s" pkg-name))
+                ))))
 
     (when my-debug
       (message "package name=%s version=%s package=%s" pkg-name version package))
 
     (when add-to-p
       ;; The package is visible through package manager
-      (apply orig-func args))))
-(advice-add 'package--add-to-archive-contents :around #'my-package--add-to-archive-contents-hack)
+      (apply orig-func args)))
+  (advice-add 'package--add-to-archive-contents :around #'my-package--add-to-archive-contents-hack))
 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
@@ -304,7 +309,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'elpy)
 (require-package 'flycheck)
 (require-package 'py-autopep8)
-(require-package 'ein)
+;(require-package 'ein)
+(require-package 'jupyter)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
@@ -341,10 +347,15 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'rust-mode)
 ;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
+(require-package 'matlab-mode) 
+(require-package 'define-word)
+(require-package 'nyan-mode)
+(require-package 'edit-server)
+(require-package 'org-roam)
 ;; run "M-x pdf-tool-install" at debian and open pdf in GUI Emacs
 (require-package 'pdf-tools)
-(require-package 'pyim)
-(require-package 'pyim-wbdict) ; someone may use wubi IME, not me
+;(require-package 'pyim)
+;(require-package 'pyim-wbdict) ; someone may use wubi IME, not me
 (require-package 'esup)
 
 ;; {{ Fixed expiring GNU ELPA keys

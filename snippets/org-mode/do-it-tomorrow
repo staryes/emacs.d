@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: do it tomorrow
+# key: tmrw
+# --
+*** $1[/]
+**** TODO paper reading
+**** TODO paper writing
+**** TODO coding
+**** TODO courses
+**** TODO Today I Learned
+  + $2
+**** TODO Do It Tomorrow

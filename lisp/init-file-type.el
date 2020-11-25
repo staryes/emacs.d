@@ -83,7 +83,8 @@
 ;; epub
 (add-auto-mode 'nov-mode "\\.epub\\'")
 
-(add-auto-mode 'octave-mode "\\.m$")
+;(add-auto-mode 'octave-mode "\\.m$")
+(add-auto-mode 'matlab-mode "\\.m$")
 
 ;; pyim
 (add-auto-mode 'text-mode "\\.pyim\\'")
