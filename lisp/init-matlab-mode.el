@@ -18,7 +18,7 @@
 ;; /Applications/MATLAB_R2016a.app/bin/matlab -nodesktop
 
 ;; elisp setup for matlab-mode:
-(setq matlab-shell-command "/Applications/MATLAB_R2020a.app/bin/matlab")
+(setq matlab-shell-command "/Applications/MATLAB_R2020b.app/bin/matlab")
 (setq matlab-shell-command-switches (list "-nodesktop"))
 
 ;; (with-eval-after-load 'matlab-mode

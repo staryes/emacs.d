@@ -194,7 +194,7 @@ skip user's own code in `org-mode-hook'."
         ;; }}
         ;; org v8
         org-odt-preferred-output-format "doc"
-        org-tags-column 80
+        org-tags-column 60
 
         ;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
         org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
@@ -204,7 +204,9 @@ skip user's own code in `org-mode-hook'."
                                   (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
         org-imenu-depth 9
         ;; @see http://irreal.org/blog/1
-        org-src-fontify-natively t))
+        org-src-fontify-natively t
+        org-confirm-babel-evaluate nil
+        org-src-tab-acts-natively t))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -214,6 +216,10 @@ skip user's own code in `org-mode-hook'."
    (jupyter . t)
    (matlab . t)
    (octave . t)))
+
+
+(setq org-tag-alist '(("important" . ?i)
+                    ("urgent"    . ?u)))
 
 ;;work with image setting
 ;;from  https://llazarek.com/2018/10/images-in-org-mode.html
