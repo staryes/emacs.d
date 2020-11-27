@@ -9,7 +9,7 @@
   "
 ^Misc^                     ^Audio^              ^Study^
 --------------------------------------------------------------------------
-[[_ss_] Save workgroup     [_R_] Emms Random     [_w_] Pronounce word
+[_ss_] Save workgroup     [_R_] Emms Random     [_w_] Pronounce word
 [_ll_] Load workgroup     [_n_] Emms Next       [_W_] Big words definition
 [_B_] New bookmark        [_p_] Emms Previous   [_v_] Play big word video
 [_m_] Goto bookmark       [_P_] Emms Pause      [_im_] Image of word
