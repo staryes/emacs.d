@@ -13,7 +13,7 @@
        ;; Use IPython for REPL
        (setq elpy-shell-echo-output nil
              python-shell-interpreter "ipython"
-             python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i";
+             python-shell-interpreter-args "--pylab --simple-prompt -c exec('__import__(\\'readline\\')') -i";
       python-shell-prompt-detect-failure-warning nil)
 
        ;; Enable Flycheck
@@ -30,6 +30,9 @@
        ;; Enable autopep8
        (require 'py-autopep8)
        (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+
+       ;; hook lpy
+       (add-hook 'python-mode-hook #'lpy-mode)
        )
 
   ;; http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338

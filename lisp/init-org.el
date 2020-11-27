@@ -213,9 +213,7 @@ skip user's own code in `org-mode-hook'."
  '((emacs-lisp . t)
    ;(julia . t)
    (python . t)
-   (jupyter . t)
-   (matlab . t)
-   (octave . t)))
+   (jupyter . t)))
 
 
 (setq org-tag-alist '(("important" . ?i)

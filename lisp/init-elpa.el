@@ -128,6 +128,7 @@
     company-statistics
     arduino-mode
     matlab-mode
+    lpy-mode
     )
   "Packages to install from melpa-unstable.")
 

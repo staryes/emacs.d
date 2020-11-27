@@ -99,7 +99,7 @@
   (require-init 'init-markdown t)
 ;  (require-init 'init-javascript t)
   (require-init 'init-org t)
-                                        ;  (require-init 'init-css t)
+;  (require-init 'init-css t)
   (require-init 'init-lisp t)
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
@@ -150,13 +150,14 @@
   ;; the key bindings in previous configuration
   (require-init 'init-ediff)
   (when (display-graphic-p)
-    (require-init 'init-fonts t))
+    (require-init 'init-fonts t)
+    (require-init 'init-gui-frames))
   (require-init 'init-nyan-mode t)
   (require-init 'init-define-word t)
   (when *is-a-mac*
     (require-init 'init-matlab-mode t)
     (require-init 'init-org-roam t)
-    (require-init 'init-org-ref t)    
+    (require-init 'init-org-ref t)
     )
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
