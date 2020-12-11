@@ -39,5 +39,6 @@
   ;; emacs 24.4+
 (setq electric-indent-chars (delq ?: electric-indent-chars))
 
+(defalias 'workon 'pyvenv-workon)
 
 (provide 'init-python)

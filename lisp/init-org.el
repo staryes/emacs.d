@@ -119,6 +119,15 @@ ARG is ignored."
   (my-ensure 'ox-md)
   (add-to-list 'org-export-backends 'md)
 
+  ;; beamer export
+  (require 'ox-latex)
+  (add-to-list 'org-latex-classes
+             '("beamer"
+               "\\documentclass\[presentation\]\{beamer\}"
+               ("\\section\{%s\}" . "\\section*\{%s\}")
+               ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+               ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+  
   (defun org-agenda-show-agenda-and-todo (&optional arg)
     "Better org-mode agenda view."
     (interactive "P")
@@ -194,7 +203,7 @@ skip user's own code in `org-mode-hook'."
         ;; }}
         ;; org v8
         org-odt-preferred-output-format "doc"
-        org-tags-column 60
+        org-tags-column 0
 
         ;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
         org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
@@ -294,5 +303,7 @@ images in the current buffer."
     (unless (and is-link-p is-file-p)
       (user-error "Not on file link"))
     (expand-file-name (org-element-property :path org-element))))
+
+(require 'org-download)
 
 (provide 'init-org)

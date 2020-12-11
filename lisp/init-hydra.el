@@ -477,7 +477,7 @@ Git:
   ("Q" git-gutter-toggle)
   ("f" my-git-find-file-in-commit)
   ("q" nil))
-(global-set-key (kbd "C-c C-g") 'hydra-git/body)
+(global-set-key (kbd "C-c g") 'hydra-git/body)
 ;; }}
 
 (defhydra hydra-search ()
