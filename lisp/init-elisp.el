@@ -14,4 +14,7 @@
     (checkdoc-minor-mode 1)))
 (add-hook 'emacs-lisp-mode-hook 'elisp-mode-hook-setup)
 
+;; hook lispy
+(add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+
 (provide 'init-elisp)

@@ -45,6 +45,11 @@
                 inferior-lisp-mode-hook
                 lisp-interaction-mode-hook)))
   (dolist (hook hooks)
-    (add-hook hook 'sanityinc/lisp-setup)))
+    (add-hook hook 'sanityinc/lisp-setup)
+    ;; hook lispy
+	(add-hook hook #'lispy-mode )
+    ))
+
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
 
 (provide 'init-lisp)

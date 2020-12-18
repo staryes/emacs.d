@@ -376,7 +376,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
     (require-package theme)))
 
 (require-package 'magit)
-(require-package 'ace-pinyin)
+;(require-package 'ace-pinyin)
 (require-package 'which-key)
 
 ;; speed up CI
